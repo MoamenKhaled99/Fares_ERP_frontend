@@ -6,11 +6,13 @@ import { Card, CardContent, CardHeader, CardTitle } from '../../components/ui/ca
 import ProductTable from './ProductTable';
 import AddProductForm from './AddProductForm';
 import AddStockModal from './AddStockModal';
+import EditProductModal from './EditProductModal';
 
 const ProductsPage = ({ title = "المنتجات", type = "irons" }) => {
-  const { data, loading, error, addProduct, removeProduct, addStock } = useProducts(type);
+  const { data, loading, error, addProduct, removeProduct, addStock, updateProduct } = useProducts(type);
   const [isAddOpen, setIsAddOpen] = useState(false);
   const [stockItem, setStockItem] = useState(null);
+  const [editItem, setEditItem] = useState(null);
 
   return (
     <div className="space-y-6 p-8 min-h-screen" dir="rtl">
@@ -56,10 +58,19 @@ const ProductsPage = ({ title = "المنتجات", type = "irons" }) => {
       )}
 
       {stockItem && (
-        <AddStockModal 
-          product={stockItem} 
-          onSubmit={addStock} 
-          onClose={() => setStockItem(null)} 
+        <AddStockModal
+          product={stockItem}
+          onSubmit={addStock}
+          onClose={() => setStockItem(null)}
+        />
+      )}
+
+      {editItem && (
+        <EditProductModal
+          product={editItem}
+          type={type}
+          onSubmit={updateProduct} // Pass update function
+          onClose={() => setEditItem(null)} // Close function
         />
       )}
     </div>

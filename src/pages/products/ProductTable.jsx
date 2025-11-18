@@ -1,14 +1,12 @@
 import React from 'react';
-import { Plus, Trash2 } from 'lucide-react';
+import { Plus, Trash2, Pencil } from 'lucide-react';
 import { formatCurrency } from '../../lib/utils';
 import { Badge } from '../../components/ui/badge';
 import { Button } from '../../components/ui/button';
 
-const ProductTable = ({ products, onDelete, onAddStock }) => {
+const ProductTable = ({ products, onDelete, onAddStock, onEdit= () => {} }) => {
   if (!products || !products.length) return <div className="text-center p-8 text-gray-500">لا توجد منتجات متاحة</div>;
 
-  // Detect if the product list contains silk strips to conditionally render columns
-  // Assuming mixed lists won't happen, or we just check the first item
   const isSilkStrip = products.length > 0 && (products[0].loadCapacity !== undefined || products[0].safetyFactor !== undefined);
 
   return (
@@ -58,6 +56,9 @@ const ProductTable = ({ products, onDelete, onAddStock }) => {
                 </Badge>
               </td>
               <td className="p-4 align-middle flex gap-2">
+                <Button size="sm" variant="outline" onClick={() => onEdit(p)} title="تعديل المنتج">
+                  <Pencil className="h-4 w-4" />
+                </Button>
                 <Button size="sm" variant="outline" onClick={() => onAddStock(p)} title="إضافة مخزون">
                   <Plus className="h-4 w-4" />
                 </Button>

@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Plus, Trash2, CheckCircle2 } from 'lucide-react';
+import { Plus, Trash2, CheckCircle2, Loader2 } from 'lucide-react';
 import { invoiceService } from '../../services/invoiceService';
 import { useProducts } from '../../hooks/useProducts';
 import { formatCurrency } from '../../lib/utils';
@@ -7,14 +7,15 @@ import { Button } from '../../components/ui/button';
 import { Input } from '../../components/ui/input';
 import { Label } from '../../components/ui/label';
 import { Card, CardHeader, CardTitle, CardContent } from '../../components/ui/card';
+import { toast } from "sonner"; //
 
 const InvoiceCreator = () => {
   const [lineItems, setLineItems] = useState([]);
-  const [loading, setLoading] = useState(false);
+  const [submitting, setSubmitting] = useState(false);
   
-  // Maps frontend selection to backend endpoints/types
+  // Maps frontend selection to backend endpoints
   const [selectedType, setSelectedType] = useState('irons');
-  const { data: products } = useProducts(selectedType);
+  const { data: products, refresh: refreshProducts } = useProducts(selectedType); //
   
   const [selectedProductId, setSelectedProductId] = useState('');
   const [qty, setQty] = useState(1);
@@ -22,16 +23,27 @@ const InvoiceCreator = () => {
   const [notes, setNotes] = useState('');
 
   const handleAddItem = () => {
-    if(!selectedProductId || !qty || !sellPrice) return;
+    if(!selectedProductId || !qty || !sellPrice) {
+      toast.error("يرجى تعبئة جميع الحقول المطلوبة");
+      return;
+    }
     
     const product = products.find(p => p.id === parseInt(selectedProductId));
     if (!product) return;
 
+    // Validation: Check stock locally (optional but good UX)
+    if (parseInt(qty) > product.totalQuantity) {
+       toast.warning("تنبيه: الكمية المطلوبة أكبر من الرصيد المتاح");
+    }
+
     // Map the API path type to the 'productType' expected by the Invoice schema
     let backendProductType = '';
-    if (selectedType === 'irons') backendProductType = 'iron';
-    else if (selectedType === 'wires') backendProductType = 'wire';
-    else if (selectedType === 'silk-strips') backendProductType = 'silk_strip';
+    switch (selectedType) {
+        case 'irons': backendProductType = 'iron'; break;
+        case 'wires': backendProductType = 'wire'; break;
+        case 'silk-strips': backendProductType = 'silk_strip'; break;
+        default: backendProductType = 'iron';
+    }
 
     setLineItems(prev => [...prev, {
       id: Date.now(),
@@ -43,14 +55,16 @@ const InvoiceCreator = () => {
       sellPrice: parseFloat(sellPrice)
     }]);
     
+    // Reset fields
     setSelectedProductId('');
     setQty(1);
     setSellPrice('');
+    toast.success("تم إضافة المنتج للقائمة");
   };
 
   const handleSaveInvoice = async () => {
     if(!lineItems.length) return;
-    setLoading(true);
+    setSubmitting(true);
     
     // Construct payload matching Invoice validation rules
     const payload = {
@@ -60,24 +74,30 @@ const InvoiceCreator = () => {
         productId: item.productId,
         quantity: item.quantity,
         sellingPrice: item.sellPrice,
-        purchasePrice: item.buyPrice // Optional, backend can fetch it, but sending it ensures accuracy
+        purchasePrice: item.buyPrice 
       }))
     };
 
     try {
-      await invoiceService.create(payload);
+      await invoiceService.create(payload); //
+      
       setLineItems([]);
       setNotes('');
-      alert("تم حفظ الفاتورة بنجاح");
+      toast.success("تم حفظ الفاتورة بنجاح");
+      
+      // Update stock counts in the dropdown
+      refreshProducts();
+      
     } catch(e) {
       console.error(e);
-      alert("فشل الحفظ: " + e.message);
+      toast.error("فشل حفظ الفاتورة: " + (e.message || "خطأ غير معروف"));
     } finally {
-      setLoading(false);
+      setSubmitting(false);
     }
   };
 
   const totalAmount = lineItems.reduce((sum, item) => sum + (item.quantity * item.sellPrice), 0);
+  const totalProfit = lineItems.reduce((sum, item) => sum + (item.quantity * (item.sellPrice - item.buyPrice)), 0);
 
   return (
     <div className="p-8 space-y-6 min-h-screen" dir="rtl">
@@ -88,7 +108,7 @@ const InvoiceCreator = () => {
 
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
         {/* Form Section */}
-        <Card className="lg:col-span-1 h-fit">
+        <Card className="lg:col-span-1 h-fit shadow-lg border-0/50">
           <CardHeader>
             <CardTitle>إضافة منتجات</CardTitle>
           </CardHeader>
@@ -98,7 +118,10 @@ const InvoiceCreator = () => {
               <select 
                 className="w-full h-10 rounded-md border border-gray-300 px-3 bg-white focus:outline-none focus:ring-2 focus:ring-blue-500" 
                 value={selectedType} 
-                onChange={e => setSelectedType(e.target.value)}
+                onChange={e => {
+                  setSelectedType(e.target.value);
+                  setSelectedProductId('');
+                }}
               >
                 <option value="irons">الحديد</option>
                 <option value="wires">الويرات</option>
@@ -112,10 +135,10 @@ const InvoiceCreator = () => {
                 value={selectedProductId} 
                 onChange={e => setSelectedProductId(e.target.value)}
               >
-                <option value="">اختر...</option>
+                <option value="">اختر منتج...</option>
                 {products.map(p => (
                   <option key={p.id} value={p.id}>
-                    {p.description || p.name} (رصيد: {p.totalQuantity})
+                    {p.description || p.name} (الرصيد: {p.totalQuantity})
                   </option>
                 ))}
               </select>
@@ -137,37 +160,45 @@ const InvoiceCreator = () => {
         </Card>
 
         {/* Invoice Preview Section */}
-        <Card className="lg:col-span-2 flex flex-col">
-          <CardHeader>
-            <CardTitle className="flex justify-between">
+        <Card className="lg:col-span-2 flex flex-col shadow-lg border-0/50">
+          <CardHeader className="border-b bg-gray-50/50 rounded-t-xl">
+            <CardTitle className="flex justify-between items-center">
               <span>معاينة الفاتورة</span>
-              <span className="text-blue-600">{formatCurrency(totalAmount)}</span>
+              <div className="text-left">
+                <span className="block text-sm text-gray-500 font-normal">الإجمالي</span>
+                <span className="text-2xl text-blue-600">{formatCurrency(totalAmount)}</span>
+              </div>
             </CardTitle>
           </CardHeader>
-          <CardContent className="flex-1 flex flex-col">
-            <div className="rounded-md border flex-1 overflow-hidden mb-4">
+          <CardContent className="flex-1 flex flex-col pt-6">
+            <div className="rounded-md border flex-1 overflow-hidden mb-6 relative min-h-[200px]">
               <table className="w-full text-right text-sm">
-                <thead className="bg-gray-50">
+                <thead className="bg-gray-50 text-gray-700">
                   <tr>
-                    <th className="p-3 font-medium text-gray-500">المنتج</th>
-                    <th className="p-3 font-medium text-gray-500">الكمية</th>
-                    <th className="p-3 font-medium text-gray-500">السعر</th>
-                    <th className="p-3 font-medium text-gray-500">المجموع</th>
-                    <th className="p-3"></th>
+                    <th className="p-3 font-medium">المنتج</th>
+                    <th className="p-3 font-medium">النوع</th>
+                    <th className="p-3 font-medium">الكمية</th>
+                    <th className="p-3 font-medium">السعر</th>
+                    <th className="p-3 font-medium">المجموع</th>
+                    <th className="p-3 w-10"></th>
                   </tr>
                 </thead>
-                <tbody>
+                <tbody className="divide-y">
                   {lineItems.map((item) => (
-                    <tr key={item.id} className="border-t">
-                      <td className="p-3">{item.productName}</td>
+                    <tr key={item.id} className="hover:bg-gray-50/50">
+                      <td className="p-3 font-medium">{item.productName}</td>
+                      <td className="p-3 text-xs text-gray-500">
+                        {item.productType === 'iron' ? 'حديد' : 
+                         item.productType === 'wire' ? 'سلك' : 'شريط'}
+                      </td>
                       <td className="p-3">{item.quantity}</td>
                       <td className="p-3">{formatCurrency(item.sellPrice)}</td>
-                      <td className="p-3 font-bold">{formatCurrency(item.quantity * item.sellPrice)}</td>
+                      <td className="p-3 font-bold text-gray-900">{formatCurrency(item.quantity * item.sellPrice)}</td>
                       <td className="p-3">
                         <Button 
                           size="icon" 
                           variant="ghost" 
-                          className="text-red-500 h-8 w-8 hover:bg-red-50" 
+                          className="text-red-500 h-8 w-8 hover:bg-red-50 hover:text-red-700" 
                           onClick={() => setLineItems(lineItems.filter(i => i.id !== item.id))}
                         >
                           <Trash2 className="h-4 w-4" />
@@ -176,25 +207,44 @@ const InvoiceCreator = () => {
                     </tr>
                   ))}
                   {!lineItems.length && (
-                    <tr><td colSpan="5" className="p-8 text-center text-gray-400">الفاتورة فارغة</td></tr>
+                    <tr>
+                      <td colSpan="6" className="p-12 text-center text-gray-400 bg-gray-50/30">
+                        لم يتم إضافة منتجات بعد
+                      </td>
+                    </tr>
                   )}
                 </tbody>
               </table>
             </div>
             
-            <div className="space-y-4 mt-auto">
+            <div className="space-y-4 mt-auto bg-gray-50 p-4 rounded-lg border">
               <div className="space-y-2">
-                <Label>ملاحظات</Label>
+                <Label>ملاحظات الفاتورة</Label>
                 <textarea 
-                  className="w-full min-h-[80px] rounded-md border border-gray-300 p-3 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  className="w-full min-h-[60px] rounded-md border border-gray-300 p-3 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white"
                   placeholder="أدخل ملاحظات إضافية هنا..."
                   value={notes}
                   onChange={e => setNotes(e.target.value)}
                 ></textarea>
               </div>
-              <Button size="lg" className="w-full bg-green-600 hover:bg-green-700" disabled={!lineItems.length} onClick={handleSaveInvoice}>
-                 {loading ? 'جاري الحفظ...' : <><CheckCircle2 className="mr-2 h-5 w-5" /> حفظ وطباعة</>}
-              </Button>
+              
+              <div className="flex items-center justify-between gap-4 pt-2">
+                <div className="text-sm text-gray-500">
+                  عدد العناصر: <span className="font-medium text-gray-900">{lineItems.length}</span>
+                </div>
+                <Button 
+                  size="lg" 
+                  className="bg-green-600 hover:bg-green-700 min-w-[200px]" 
+                  disabled={!lineItems.length || submitting} 
+                  onClick={handleSaveInvoice}
+                >
+                   {submitting ? (
+                     <><Loader2 className="mr-2 h-5 w-5 animate-spin" /> جاري الحفظ...</>
+                   ) : (
+                     <><CheckCircle2 className="mr-2 h-5 w-5" /> حفظ الفاتورة</>
+                   )}
+                </Button>
+              </div>
             </div>
           </CardContent>
         </Card>

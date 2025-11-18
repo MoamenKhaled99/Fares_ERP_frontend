@@ -156,7 +156,6 @@ const DashboardPageNew = () => {
           icon={ArrowRightLeft} 
           color="green"
           trend={true}
-          trendValue="+8.3%"
           footer="الفرق بين سعر الشراء والبيع"
         />
         <StatCard 
@@ -166,7 +165,6 @@ const DashboardPageNew = () => {
           icon={ShoppingCart} 
           color="purple"
           trend={true}
-          trendValue="+5.2%"
           footer="إجمالي عدد الفواتير المكتملة"
         />
       </div>

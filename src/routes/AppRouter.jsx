@@ -19,7 +19,8 @@ const AppRouter = () => {
       case '/irons': return <ProductsPage title="الحديد" type="irons" />;
       case '/wires': return <ProductsPage title="الويرات" type="wires" />;
       case '/silk': return <ProductsPage title="الشرائط الحريرية" type="silk-strips" />;
-      case '/invoices': return <InvoicesList />;
+      case '/invoices': return <InvoicesList navigate={navigate} />;
+
       case '/invoices/new': return <InvoiceCreator />;
       default: return <DashboardPageNew />;
     }
@@ -36,7 +37,7 @@ const AppRouter = () => {
             <span className="font-bold text-xl bg-linear-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">نظام فارس</span>
           </div>
         </header>
-        
+
         <main className="flex-1 overflow-auto">
           {renderContent()}
         </main>
