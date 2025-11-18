@@ -7,12 +7,24 @@ import ProductTable from './ProductTable';
 import AddProductForm from './AddProductForm';
 import AddStockModal from './AddStockModal';
 import EditProductModal from './EditProductModal';
+import DeleteConfirmationModal from './DeleteConfirmationModal';
 
 const ProductsPage = ({ title = "المنتجات", type = "irons" }) => {
   const { data, loading, error, addProduct, removeProduct, addStock, updateProduct } = useProducts(type);
   const [isAddOpen, setIsAddOpen] = useState(false);
   const [stockItem, setStockItem] = useState(null);
   const [editItem, setEditItem] = useState(null);
+  const [deleteItem, setDeleteItem] = useState(null);
+
+  const initiateDelete = (product) => {
+    setDeleteItem(product);
+  };
+
+  const confirmDelete = async () => {
+    const idToDelete = deleteItem.id;
+    setDeleteItem(null); // Close modal
+    await removeProduct(idToDelete); // Execute actual deletion
+  }
 
   return (
     <div className="space-y-6 p-8 min-h-screen" dir="rtl">
@@ -38,7 +50,11 @@ const ProductsPage = ({ title = "المنتجات", type = "irons" }) => {
           {loading ? (
             <div className="flex justify-center py-8"><Loader2 className="h-8 w-8 animate-spin text-blue-600" /></div>
           ) : (
-            <ProductTable products={data} onDelete={removeProduct} onAddStock={setStockItem} />
+            <ProductTable 
+              products={data}
+              onDelete={initiateDelete}
+              onAddStock={setStockItem}
+              onEdit={setEditItem} />
           )}
         </CardContent>
       </Card>
@@ -73,6 +89,15 @@ const ProductsPage = ({ title = "المنتجات", type = "irons" }) => {
           onClose={() => setEditItem(null)} // Close function
         />
       )}
+
+      {deleteItem && (
+        <DeleteConfirmationModal
+          product={deleteItem}
+          onConfirm={confirmDelete}
+          onClose={() => setDeleteItem(null)}
+        />
+      )}
+      
     </div>
   );
 };

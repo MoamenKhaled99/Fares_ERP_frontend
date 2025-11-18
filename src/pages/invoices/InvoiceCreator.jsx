@@ -188,7 +188,7 @@ const InvoiceCreator = () => {
                     <tr key={item.id} className="hover:bg-gray-50/50">
                       <td className="p-3 font-medium">{item.productName}</td>
                       <td className="p-3 text-xs text-gray-500">
-                        {item.productType === 'iron' ? 'حديد' : 
+                        {item.productType === 'iron' ? 'حدايد' : 
                          item.productType === 'wire' ? 'سلك' : 'شريط'}
                       </td>
                       <td className="p-3">{item.quantity}</td>

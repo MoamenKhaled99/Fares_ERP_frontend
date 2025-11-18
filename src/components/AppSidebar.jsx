@@ -5,7 +5,7 @@ const AppSidebar = ({ currentPath, navigate }) => {
   const menuItems = [
     { id: 'dashboard', label: 'لوحة التحكم', icon: LayoutDashboard, path: '/' },
     { type: 'separator', label: 'المخزون' },
-    { id: 'irons', label: 'الحديد', icon: Anchor, path: '/irons' },
+    { id: 'irons', label: 'حدايد', icon: Anchor, path: '/irons' },
     { id: 'wires', label: 'الويرات', icon: Cable, path: '/wires' },
     { id: 'silk', label: 'الشرائط', icon: Package, path: '/silk' },
     { type: 'separator', label: 'المعاملات' },

@@ -202,5 +202,11 @@
   }
   body {
     @apply bg-background text-foreground;
+      /* ✅ FIX: Add a larger utility class here.
+      - text-base: 16px (Default)
+      - text-lg: 18px (Recommended slight increase)
+      - text-xl: 20px (Larger increase)
+    */
+    @apply text-lg;
   }
 }

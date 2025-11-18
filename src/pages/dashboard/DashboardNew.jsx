@@ -35,7 +35,7 @@ const DashboardPageNew = () => {
         // Backend returns object: { silk_strip: { quantity: 0, ... }, iron: { ... } }
         // Recharts needs array: [{ name: 'Silk', quantity: 0 }, ...]
         const salesArray = Object.entries(salesDataObj).map(([key, value]) => ({
-          name: key === 'silk_strip' ? 'شرائط' : key === 'iron' ? 'حديد' : 'ويرات',
+          name: key === 'silk_strip' ? 'شرائط' : key === 'iron' ? 'حدايد' : 'ويرات',
           totalSales: value.quantity || 0, // mapping quantity to sales for chart
           totalProfit: value.profit || 0
         }));
@@ -63,9 +63,9 @@ const DashboardPageNew = () => {
     <Card className="relative overflow-hidden">
       <div className={`absolute top-0 left-0 w-1 h-full bg-${color}-500`}></div>
       <CardHeader className="relative pb-2">
-        <CardDescription className="text-sm font-medium">{title}</CardDescription>
-        <CardTitle className="text-3xl font-bold tabular-nums">
-          {loading ? <Skeleton className="h-9 w-32" /> : value}
+        <CardDescription className="text-sm font-medium ">{title}</CardDescription>
+        <CardTitle className="text-3xl font-bold tabular-nums ms-16 ">
+          {loading ? <Skeleton  /> : value}
         </CardTitle>
         <div className="absolute right-4 top-4">
           <div className={`p-3 rounded-xl bg-${color}-50 text-${color}-600`}>
@@ -117,7 +117,7 @@ const DashboardPageNew = () => {
       {!loading && stats?.lowStockItems && stats.lowStockItems.length > 0 && (
         <Card className="border-orange-500 bg-orange-50">
           <CardHeader className="pb-2">
-            <CardTitle className="flex items-center gap-2 text-orange-700 text-lg">
+            <CardTitle className="flex items-center gap-2 text-orange-700 text-lg ">
               <AlertTriangle className="h-5 w-5" />
               تنبيه: مخزون منخفض
             </CardTitle>
@@ -128,7 +128,7 @@ const DashboardPageNew = () => {
                 <div key={idx} className="text-sm text-orange-800 flex items-center gap-2">
                   <span className="w-2 h-2 rounded-full bg-orange-500"></span>
                   <span className="font-semibold">{item.name}</span>
-                  <span className="text-orange-600">({item.type === 'silk_strip' ? 'شريط' : item.type === 'iron' ? 'حديد' : 'واير'})</span>
+                  <span className="text-orange-600">({item.type === 'silk_strip' ? 'شريط' : item.type === 'iron' ? 'حدايد' : 'واير'})</span>
                   <span>- الكمية المتبقية: <span className="font-bold">{item.quantity}</span></span>
                 </div>
               ))}

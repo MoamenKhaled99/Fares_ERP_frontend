@@ -38,7 +38,7 @@ export function FaresSidebar({ currentPath, navigate, ...props }) {
         isActive: currentPath === "/",
       },
       {
-        title: "الحديد",
+        title: "الحدايد",
         url: "/irons",
         icon: Anchor,
         isActive: currentPath === "/irons",

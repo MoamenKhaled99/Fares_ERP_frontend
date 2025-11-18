@@ -1,9 +1,9 @@
-const API_BASE_URL = 'http://localhost:5000';
+const API_BASE_URL = "http://localhost:5000";
 
 class ApiClient {
   async request(endpoint, options = {}) {
     const config = {
-      headers: { 'Content-Type': 'application/json' },
+      headers: { "Content-Type": "application/json" },
       ...options,
     };
 
@@ -13,6 +13,10 @@ class ApiClient {
         const errorData = await response.json().catch(() => ({}));
         throw new Error(errorData.message || `Error: ${response.status}`);
       }
+
+      if (response.status === 204 || response.status === 205) {
+        return null; // Return null or an empty object instead of parsing JSON
+      }
       return await response.json();
     } catch (error) {
       console.error(`API Call Failed [${endpoint}]:`, error);
@@ -20,10 +24,24 @@ class ApiClient {
     }
   }
 
-  get(endpoint) { return this.request(endpoint, { method: 'GET' }); }
-  post(endpoint, body) { return this.request(endpoint, { method: 'POST', body: JSON.stringify(body) }); }
-  put(endpoint, body) { return this.request(endpoint, { method: 'PUT', body: JSON.stringify(body) }); }
-  delete(endpoint) { return this.request(endpoint, { method: 'DELETE' }); }
+  get(endpoint) {
+    return this.request(endpoint, { method: "GET" });
+  }
+  post(endpoint, body) {
+    return this.request(endpoint, {
+      method: "POST",
+      body: JSON.stringify(body),
+    });
+  }
+  put(endpoint, body) {
+    return this.request(endpoint, {
+      method: "PUT",
+      body: JSON.stringify(body),
+    });
+  }
+  delete(endpoint) {
+    return this.request(endpoint, { method: "DELETE" });
+  }
 }
 
 export const api = new ApiClient();

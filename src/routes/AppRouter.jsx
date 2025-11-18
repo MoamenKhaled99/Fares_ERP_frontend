@@ -16,7 +16,7 @@ const AppRouter = () => {
   const renderContent = () => {
     switch (currentPath) {
       case '/': return <DashboardPageNew />;
-      case '/irons': return <ProductsPage title="الحديد" type="irons" />;
+      case '/irons': return <ProductsPage title="الحدايد" type="irons" />;
       case '/wires': return <ProductsPage title="الويرات" type="wires" />;
       case '/silk': return <ProductsPage title="الشرائط الحريرية" type="silk-strips" />;
       case '/invoices': return <InvoicesList navigate={navigate} />;
