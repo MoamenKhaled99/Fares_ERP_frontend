@@ -59,7 +59,17 @@ export function FaresSidebar({ currentPath, navigate, ...props }) {
         title: "الفواتير",
         url: "/invoices",
         icon: ShoppingCart,
-        isActive: currentPath === "/invoices",
+        isActive: currentPath === "/invoices" || currentPath === "/invoices/new",
+        items: [
+          {
+            title: "قائمة الفواتير",
+            url: "/invoices",
+          },
+          {
+            title: "فاتورة جديدة",
+            url: "/invoices/new",
+          },
+        ],
       },
     ],
     navSecondary: [
@@ -83,7 +93,8 @@ export function FaresSidebar({ currentPath, navigate, ...props }) {
   }
 
   return (
-    <Sidebar collapsible="icon" {...props}>
+    // FIX: Added side="right" to align with RTL layout
+    <Sidebar collapsible="icon" side="right" {...props}>
       <SidebarHeader>
         <SidebarMenu>
           <SidebarMenuItem>

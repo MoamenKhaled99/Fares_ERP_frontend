@@ -1,11 +1,10 @@
 import React, { useState } from 'react';
-import { Menu, PanelLeft } from 'lucide-react';
-import Button from '../components/ui/button';
 import { FaresSidebar } from '../components/FaresSidebar';
 import { SidebarProvider, SidebarTrigger, SidebarInset } from '@/components/ui/sidebar';
 import DashboardPageNew from '../pages/dashboard/DashboardNew';
 import ProductsPage from '../pages/products';
 import InvoiceCreator from '../pages/invoices/InvoiceCreator';
+import InvoicesList from '../pages/invoices/InvoicesList';
 
 // NOTE: For a full desktop app, you would likely use 'react-router-dom'.
 // This simple state-based router works perfectly for a single-window electron app.
@@ -20,7 +19,8 @@ const AppRouter = () => {
       case '/irons': return <ProductsPage title="الحديد" type="irons" />;
       case '/wires': return <ProductsPage title="الويرات" type="wires" />;
       case '/silk': return <ProductsPage title="الشرائط الحريرية" type="silk-strips" />;
-      case '/invoices': return <InvoiceCreator />;
+      case '/invoices': return <InvoicesList />;
+      case '/invoices/new': return <InvoiceCreator />;
       default: return <DashboardPageNew />;
     }
   };

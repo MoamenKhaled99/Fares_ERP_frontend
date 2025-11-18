@@ -1,11 +1,15 @@
 import React from 'react';
 import { Plus, Trash2 } from 'lucide-react';
 import { formatCurrency } from '../../lib/utils';
-import Badge from '../../components/ui/badge';
-import Button from '../../components/ui/button';
+import { Badge } from '../../components/ui/badge';
+import { Button } from '../../components/ui/button';
 
 const ProductTable = ({ products, onDelete, onAddStock }) => {
   if (!products || !products.length) return <div className="text-center p-8 text-gray-500">لا توجد منتجات متاحة</div>;
+
+  // Detect if the product list contains silk strips to conditionally render columns
+  // Assuming mixed lists won't happen, or we just check the first item
+  const isSilkStrip = products.length > 0 && (products[0].loadCapacity !== undefined || products[0].safetyFactor !== undefined);
 
   return (
     <div className="w-full overflow-auto">
@@ -13,9 +17,18 @@ const ProductTable = ({ products, onDelete, onAddStock }) => {
         <thead className="[&_tr]:border-b">
           <tr className="border-b transition-colors hover:bg-gray-50/50 data-[state=selected]:bg-gray-50">
             <th className="h-12 px-4 align-middle font-medium text-gray-500">#</th>
-            <th className="h-12 px-4 align-middle font-medium text-gray-500">الوصف</th>
+            {isSilkStrip ? (
+               <>
+                 <th className="h-12 px-4 align-middle font-medium text-gray-500">حمولة الطن</th>
+                 <th className="h-12 px-4 align-middle font-medium text-gray-500">معامل الأمان</th>
+                 <th className="h-12 px-4 align-middle font-medium text-gray-500">المتر</th>
+               </>
+            ) : (
+                <th className="h-12 px-4 align-middle font-medium text-gray-500">الوصف</th>
+            )}
             <th className="h-12 px-4 align-middle font-medium text-gray-500">سعر الوحدة</th>
-            <th className="h-12 px-4 align-middle font-medium text-gray-500">المخزون</th>
+            <th className="h-12 px-4 align-middle font-medium text-gray-500">الكمية</th>
+            <th className="h-12 px-4 align-middle font-medium text-gray-500">الرصيد (القيمة)</th>
             <th className="h-12 px-4 align-middle font-medium text-gray-500">الحالة</th>
             <th className="h-12 px-4 align-middle font-medium text-gray-500">إجراءات</th>
           </tr>
@@ -24,19 +37,31 @@ const ProductTable = ({ products, onDelete, onAddStock }) => {
           {products.map((p) => (
             <tr key={p.id} className="border-b transition-colors hover:bg-gray-50/50">
               <td className="p-4 align-middle">{p.id}</td>
-              <td className="p-4 align-middle font-medium">{p.وصف || p.description}</td>
-              <td className="p-4 align-middle">{formatCurrency(p.سعر_الوحدة || p.unit_price || 0)}</td>
-              <td className="p-4 align-middle">{p.وارد || 0}</td>
+              
+              {isSilkStrip ? (
+                <>
+                  <td className="p-4 align-middle font-medium">{p.loadCapacity || '-'}</td>
+                  <td className="p-4 align-middle">{p.safetyFactor || '-'}</td>
+                  <td className="p-4 align-middle">{p.unitMeter || '-'}</td>
+                </>
+              ) : (
+                <td className="p-4 align-middle font-medium">{p.description || p.name || 'بدون وصف'}</td>
+              )}
+
+              <td className="p-4 align-middle">{formatCurrency(p.unitPrice || 0)}</td>
+              <td className="p-4 align-middle font-bold">{p.totalQuantity || 0}</td>
+              <td className="p-4 align-middle text-gray-600">{formatCurrency(p.balance || 0)}</td>
+              
               <td className="p-4 align-middle">
-                <Badge variant={(p.وارد || 0) < 10 ? "destructive" : "success"}>
-                  {(p.وارد || 0) < 10 ? "منخفض" : "متوفر"}
+                <Badge variant={(p.totalQuantity || 0) < 10 ? "destructive" : "default"} className={(p.totalQuantity || 0) < 10 ? "bg-red-500" : "bg-green-600 hover:bg-green-700"}>
+                  {(p.totalQuantity || 0) < 10 ? "منخفض" : "متوفر"}
                 </Badge>
               </td>
               <td className="p-4 align-middle flex gap-2">
-                <Button size="sm" variant="outline" onClick={() => onAddStock(p)}>
+                <Button size="sm" variant="outline" onClick={() => onAddStock(p)} title="إضافة مخزون">
                   <Plus className="h-4 w-4" />
                 </Button>
-                <Button size="sm" variant="destructive" onClick={() => onDelete(p.id)}>
+                <Button size="sm" variant="destructive" onClick={() => onDelete(p.id)} title="حذف المنتج">
                   <Trash2 className="h-4 w-4" />
                 </Button>
               </td>

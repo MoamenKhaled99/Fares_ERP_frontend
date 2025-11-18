@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { Plus, AlertCircle, Loader2 } from 'lucide-react';
 import { useProducts } from '../../hooks/useProducts';
-import Button from '../../components/ui/button';
+import { Button } from '../../components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '../../components/ui/card';
 import ProductTable from './ProductTable';
 import AddProductForm from './AddProductForm';
@@ -16,8 +16,8 @@ const ProductsPage = ({ title = "المنتجات", type = "irons" }) => {
     <div className="space-y-6 p-8 min-h-screen" dir="rtl">
       <div className="flex items-center justify-between">
         <div>
-          <h2 className="text-4xl font-bold text-white drop-shadow-lg">{title}</h2>
-          <p className="text-white/80 text-lg mt-1">إدارة مخزون {title} والمبيعات</p>
+          <h2 className="text-4xl font-bold text-gray-900 drop-shadow-sm">{title}</h2>
+          <p className="text-gray-500 text-lg mt-1">إدارة مخزون {title} والمبيعات</p>
         </div>
         <Button onClick={() => setIsAddOpen(true)} size="lg" className="shadow-xl">
           <Plus className="ml-2 h-5 w-5" /> إضافة منتج
@@ -48,7 +48,8 @@ const ProductsPage = ({ title = "المنتجات", type = "irons" }) => {
               <CardTitle>إضافة {title} جديد</CardTitle>
             </CardHeader>
             <CardContent>
-              <AddProductForm onSubmit={addProduct} onClose={() => setIsAddOpen(false)} />
+              {/* Pass the type prop here so the form knows which fields to show */}
+              <AddProductForm onSubmit={addProduct} onClose={() => setIsAddOpen(false)} type={type} />
             </CardContent>
           </Card>
         </div>

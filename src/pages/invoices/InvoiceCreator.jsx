@@ -3,16 +3,16 @@ import { Plus, Trash2, CheckCircle2 } from 'lucide-react';
 import { invoiceService } from '../../services/invoiceService';
 import { useProducts } from '../../hooks/useProducts';
 import { formatCurrency } from '../../lib/utils';
-import Button from '../../components/ui/button';
-import Input from '../../components/ui/input';
-import Label from '../../components/ui/label';
+import { Button } from '../../components/ui/button';
+import { Input } from '../../components/ui/input';
+import { Label } from '../../components/ui/label';
 import { Card, CardHeader, CardTitle, CardContent } from '../../components/ui/card';
 
 const InvoiceCreator = () => {
   const [lineItems, setLineItems] = useState([]);
   const [loading, setLoading] = useState(false);
   
-  // Filter products by type to make selection easier
+  // Maps frontend selection to backend endpoints/types
   const [selectedType, setSelectedType] = useState('irons');
   const { data: products } = useProducts(selectedType);
   
@@ -27,17 +27,22 @@ const InvoiceCreator = () => {
     const product = products.find(p => p.id === parseInt(selectedProductId));
     if (!product) return;
 
+    // Map the API path type to the 'productType' expected by the Invoice schema
+    let backendProductType = '';
+    if (selectedType === 'irons') backendProductType = 'iron';
+    else if (selectedType === 'wires') backendProductType = 'wire';
+    else if (selectedType === 'silk-strips') backendProductType = 'silk_strip';
+
     setLineItems(prev => [...prev, {
-      id: Date.now(), // Temporary ID for UI list
-      backendType: selectedType === 'irons' ? 'حديد' : selectedType === 'wires' ? 'ويرات' : 'شرائط',
+      id: Date.now(),
+      productType: backendProductType,
       productId: parseInt(selectedProductId),
-      productName: product.وصف || 'منتج',
+      productName: product.description || product.name || 'منتج',
       quantity: parseInt(qty),
-      buyPrice: product.سعر_الوحدة || 0,
+      buyPrice: product.unitPrice || 0,
       sellPrice: parseFloat(sellPrice)
     }]);
     
-    // Reset fields
     setSelectedProductId('');
     setQty(1);
     setSellPrice('');
@@ -47,22 +52,22 @@ const InvoiceCreator = () => {
     if(!lineItems.length) return;
     setLoading(true);
     
+    // Construct payload matching Invoice validation rules
     const payload = {
-      تفاصيل: lineItems.map(item => ({
-        النوع: item.backendType,
-        المنتج_id: item.productId,
-        الكمية: item.quantity,
-        سعر_الشراء: item.buyPrice,
-        سعر_البيع: item.sellPrice
-      })),
-      ملاحظات: notes
+      notes: notes,
+      details: lineItems.map(item => ({
+        productType: item.productType,
+        productId: item.productId,
+        quantity: item.quantity,
+        sellingPrice: item.sellPrice,
+        purchasePrice: item.buyPrice // Optional, backend can fetch it, but sending it ensures accuracy
+      }))
     };
 
     try {
       await invoiceService.create(payload);
       setLineItems([]);
       setNotes('');
-      // In a desktop app, you might trigger a native print window here
       alert("تم حفظ الفاتورة بنجاح");
     } catch(e) {
       console.error(e);
@@ -110,7 +115,7 @@ const InvoiceCreator = () => {
                 <option value="">اختر...</option>
                 {products.map(p => (
                   <option key={p.id} value={p.id}>
-                    {p.وصف} (رصيد: {p.وارد})
+                    {p.description || p.name} (رصيد: {p.totalQuantity})
                   </option>
                 ))}
               </select>
@@ -156,7 +161,7 @@ const InvoiceCreator = () => {
                     <tr key={item.id} className="border-t">
                       <td className="p-3">{item.productName}</td>
                       <td className="p-3">{item.quantity}</td>
-                      <td className="p-3">{item.sellPrice}</td>
+                      <td className="p-3">{formatCurrency(item.sellPrice)}</td>
                       <td className="p-3 font-bold">{formatCurrency(item.quantity * item.sellPrice)}</td>
                       <td className="p-3">
                         <Button 
@@ -187,8 +192,8 @@ const InvoiceCreator = () => {
                   onChange={e => setNotes(e.target.value)}
                 ></textarea>
               </div>
-              <Button size="lg" className="w-full bg-green-600 hover:bg-green-700" disabled={!lineItems.length} onClick={handleSaveInvoice} isLoading={loading}>
-                <CheckCircle2 className="mr-2 h-5 w-5" /> حفظ وطباعة
+              <Button size="lg" className="w-full bg-green-600 hover:bg-green-700" disabled={!lineItems.length} onClick={handleSaveInvoice}>
+                 {loading ? 'جاري الحفظ...' : <><CheckCircle2 className="mr-2 h-5 w-5" /> حفظ وطباعة</>}
               </Button>
             </div>
           </CardContent>
