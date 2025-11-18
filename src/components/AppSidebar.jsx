@@ -13,12 +13,13 @@ const AppSidebar = ({ currentPath, navigate }) => {
   ];
 
   return (
-    <aside className="hidden md:flex w-64 flex-col border-l bg-white h-screen sticky top-0 border-r">
-      <div className="p-6 border-b">
-        <h1 className="text-2xl font-bold text-blue-600 flex items-center gap-2">
-          <div className="w-8 h-8 rounded bg-blue-600 text-white flex items-center justify-center text-lg">F</div>
+    <aside className="hidden md:flex w-64 flex-col glass-effect h-screen sticky top-0 shadow-xl">
+      <div className="p-6 border-b border-gray-200/50">
+        <h1 className="text-2xl font-bold gradient-blue bg-clip-text text-transparent flex items-center gap-3">
+          <div className="w-10 h-10 rounded-xl gradient-blue text-white flex items-center justify-center text-xl font-bold shadow-lg">F</div>
           Fares ERP
         </h1>
+        <p className="text-xs text-gray-500 mt-2 mr-13">نظام إدارة متكامل</p>
       </div>
       <nav className="flex-1 overflow-y-auto p-4 space-y-1">
         {menuItems.map((item, idx) => (
@@ -31,23 +32,23 @@ const AppSidebar = ({ currentPath, navigate }) => {
               key={item.id}
               onClick={() => navigate(item.path)}
               className={cn(
-                "w-full flex items-center gap-3 px-4 py-2.5 text-sm font-medium rounded-md transition-colors",
+                "w-full flex items-center gap-3 px-4 py-3 text-sm font-medium rounded-xl transition-all duration-200",
                 currentPath === item.path 
-                  ? "bg-blue-50 text-blue-700" 
-                  : "text-gray-700 hover:bg-gray-100 hover:text-gray-900"
+                  ? "bg-gradient-to-r from-blue-500 to-purple-600 text-white shadow-lg shadow-blue-500/50" 
+                  : "text-gray-700 hover:bg-white/50 hover:text-gray-900 hover:shadow-md"
               )}
             >
-              <item.icon className="h-4 w-4" />
+              <item.icon className="h-5 w-5" />
               {item.label}
             </button>
           )
         ))}
       </nav>
-      <div className="p-4 border-t bg-gray-50">
-        <div className="flex items-center gap-3">
-          <div className="w-8 h-8 rounded-full bg-blue-100 text-blue-600 flex items-center justify-center font-bold">A</div>
+      <div className="p-4 border-t border-gray-200/50 bg-white/30">
+        <div className="flex items-center gap-3 p-3 rounded-xl hover:bg-white/50 transition-all cursor-pointer">
+          <div className="w-10 h-10 rounded-full bg-gradient-to-br from-blue-500 to-purple-600 text-white flex items-center justify-center font-bold shadow-lg">A</div>
           <div className="text-sm">
-            <p className="font-medium text-gray-900">المسؤول</p>
+            <p className="font-semibold text-gray-900">المسؤول</p>
             <p className="text-xs text-gray-500">admin@fares.com</p>
           </div>
         </div>

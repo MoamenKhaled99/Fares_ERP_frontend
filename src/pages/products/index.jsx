@@ -13,14 +13,14 @@ const ProductsPage = ({ title = "المنتجات", type = "irons" }) => {
   const [stockItem, setStockItem] = useState(null);
 
   return (
-    <div className="space-y-6 p-6" dir="rtl">
+    <div className="space-y-6 p-8 min-h-screen" dir="rtl">
       <div className="flex items-center justify-between">
         <div>
-          <h2 className="text-3xl font-bold tracking-tight">{title}</h2>
-          <p className="text-gray-500">إدارة مخزون {title} والمبيعات</p>
+          <h2 className="text-4xl font-bold text-white drop-shadow-lg">{title}</h2>
+          <p className="text-white/80 text-lg mt-1">إدارة مخزون {title} والمبيعات</p>
         </div>
-        <Button onClick={() => setIsAddOpen(true)}>
-          <Plus className="ml-2 h-4 w-4" /> إضافة منتج
+        <Button onClick={() => setIsAddOpen(true)} size="lg" className="shadow-xl">
+          <Plus className="ml-2 h-5 w-5" /> إضافة منتج
         </Button>
       </div>
 

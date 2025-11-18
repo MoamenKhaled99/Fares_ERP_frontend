@@ -75,9 +75,10 @@ const InvoiceCreator = () => {
   const totalAmount = lineItems.reduce((sum, item) => sum + (item.quantity * item.sellPrice), 0);
 
   return (
-    <div className="p-6 space-y-6" dir="rtl">
-      <div className="flex items-center justify-between">
-        <h2 className="text-3xl font-bold tracking-tight">فاتورة بيع جديدة</h2>
+    <div className="p-8 space-y-6 min-h-screen" dir="rtl">
+      <div className="space-y-2">
+        <h2 className="text-4xl font-bold text-white drop-shadow-lg">فاتورة بيع جديدة</h2>
+        <p className="text-white/80 text-lg">أنشئ فاتورة بيع جديدة وأضف المنتجات</p>
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
