@@ -1,25 +1,44 @@
 import React, { useState, useEffect } from 'react';
-import { Eye, FileText, Loader2, AlertCircle, Plus } from 'lucide-react'; // Add Plus icon
+import { Eye, FileText, Loader2, AlertCircle, Plus } from 'lucide-react';
 import { invoiceService } from '../../services/invoiceService';
 import { formatCurrency } from '../../lib/utils';
 import { Button } from '../../components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '../../components/ui/card';
 import { Badge } from '../../components/ui/badge';
+import { Input } from '../../components/ui/input'; // ✅ IMPORTED: For Date Input
+import { Label } from '../../components/ui/label';  // ✅ IMPORTED: For Date Input Label
 
-const InvoicesList = ({ navigate }) => { // Receive navigate prop
+const InvoicesList = ({ navigate }) => { 
   const [invoices, setInvoices] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [selectedInvoice, setSelectedInvoice] = useState(null);
+  
+  const [fromDate, setFromDate] = useState(''); // ✅ NEW STATE for filter start date
+  const [toDate, setToDate] = useState('');     // ✅ NEW STATE for filter end date
 
   useEffect(() => {
     loadInvoices();
-  }, []);
+  }, [fromDate, toDate]); // ✅ EFFECT: Re-run when filter dates change
 
   const loadInvoices = async () => {
     try {
-      const data = await invoiceService.getAll();
+      setLoading(true);
+      const params = {};
+      
+      if (fromDate) params.from_date = fromDate;
+      if (toDate) {
+          // ✅ FIX: Adjust toDate to include the entire day up to the start of the next day.
+          // The backend controller/repository needs the next day's date for 'lte'.
+          let adjustedToDate = new Date(toDate);
+          adjustedToDate.setDate(adjustedToDate.getDate() + 1);
+          params.to_date = adjustedToDate.toISOString().split('T')[0];
+      }
+      
+      // Fetch data using the service which now accepts parameters
+      const data = await invoiceService.getAll(params); // Assuming getAll accepts params now
       setInvoices(data);
+      setError(null);
     } catch (e) {
       console.error('Failed to load invoices:', e);
       setError('فشل تحميل الفواتير');
@@ -37,7 +56,7 @@ const InvoicesList = ({ navigate }) => { // Receive navigate prop
           <CardHeader className="border-b">
             <CardTitle className="flex justify-between items-center">
               <span>تفاصيل الفاتورة #{invoice.id}</span>
-              <Button  variant="ghost" size="icon" onClick={onClose}>×</Button>
+              <Button variant="ghost" size="icon" onClick={onClose}>×</Button>
             </CardTitle>
           </CardHeader>
           <CardContent className="pt-6">
@@ -78,8 +97,8 @@ const InvoicesList = ({ navigate }) => { // Receive navigate prop
                         <td className="p-3">#{detail.productId}</td>
                         <td className="p-3">
                           <Badge variant="outline">
-                            {detail.productType === 'iron' ? 'حديد' :
-                              detail.productType === 'wire' ? 'سلك' : 'شريط'}
+                            {detail.productType === 'iron' ? 'حديد' : 
+                             detail.productType === 'wire' ? 'سلك' : 'شريط'}
                           </Badge>
                         </td>
                         <td className="p-3">{detail.quantity}</td>
@@ -100,6 +119,10 @@ const InvoicesList = ({ navigate }) => { // Receive navigate prop
     );
   };
 
+  const handleClearFilters = () => {
+    setFromDate('');
+    setToDate('');
+  };
 
   return (
     <div className="p-6 space-y-6 min-h-screen" dir="rtl">
@@ -114,6 +137,23 @@ const InvoicesList = ({ navigate }) => { // Receive navigate prop
             <Plus className="ml-2 h-4 w-4" /> فاتورة جديدة
           </Button>
         )}
+      </div>
+
+      {/* ✅ NEW: Date Range Filter UI */}
+      <div className="flex items-center gap-4 border p-4 rounded-lg bg-white shadow-sm">
+        <h3 className="text-md font-medium text-gray-700 shrink-0">تصفية التاريخ:</h3>
+        
+        <div className="flex items-center gap-2">
+          <Label>من:</Label>
+          <Input type="date" value={fromDate} onChange={e => setFromDate(e.target.value)} className="w-48" />
+        </div>
+        
+        <div className="flex items-center gap-2">
+          <Label>إلى:</Label>
+          <Input type="date" value={toDate} onChange={e => setToDate(e.target.value)} className="w-48" />
+        </div>
+        
+        <Button onClick={handleClearFilters} variant="ghost" size="sm">مسح</Button>
       </div>
 
       {error && (

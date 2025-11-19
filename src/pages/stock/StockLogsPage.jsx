@@ -64,6 +64,7 @@ const StockLogsPage = () => {
                 <thead className="border-b">
                   <tr>
                     <th className="p-3 font-medium text-gray-500">التاريخ</th>
+                    <th className="p-3 font-medium text-gray-500">الساعة</th>
                     <th className="p-3 font-medium text-gray-500">نوع المنتج</th>
                     <th className="p-3 font-medium text-gray-500">الكمية</th>
                     <th className="p-3 font-medium text-gray-500">السعر</th>
@@ -75,8 +76,9 @@ const StockLogsPage = () => {
                   {movements.map((movement) => (
                     <tr key={movement.id} className="border-b hover:bg-gray-50 transition-colors">
                       <td className="p-3">
-                        {new Date(movement.movementDate).toLocaleString('ar-EG')}
+                        {new Date(movement.movementDate).toLocaleDateString('ar-EG')}
                       </td>
+                      <td className="p-3">{new Date(movement.movementDate).toLocaleTimeString('ar-EG')}</td>
                       <td className="p-3">{getProductTypeArabic(movement.productType)}</td>
                       <td className="p-3 font-medium">{movement.quantity}</td>
                       <td className="p-3">{movement.purchasePrice}</td>
