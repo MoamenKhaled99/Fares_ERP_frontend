@@ -1,9 +1,9 @@
-// src/components/filters/InvoiceFilterControls.jsx (NEW FILE)
+// src/components/filters/InvoiceFilterControls.jsx
 import React from 'react';
+import { format } from 'date-fns';
 import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
-import { Card } from '@/components/ui/card';
+import { DatePicker } from '@/components/ui/date-picker';
 
 export function InvoiceFilterControls({ fromDate, setFromDate, toDate, setToDate, handleClearFilters }) {
     return (
@@ -14,21 +14,19 @@ export function InvoiceFilterControls({ fromDate, setFromDate, toDate, setToDate
 
             <div className="flex items-center gap-2">
                 <Label>من:</Label>
-                <Input
-                    type="date"
-                    value={fromDate}
-                    onChange={(e) => setFromDate(e.target.value)}
-                    className="w-48"
+                <DatePicker
+                    date={fromDate ? new Date(fromDate) : undefined}
+                    setDate={(date) => setFromDate(date ? format(date, "yyyy-MM-dd") : "")}
+                    placeholder="من تاريخ"
                 />
             </div>
 
             <div className="flex items-center gap-2">
                 <Label>إلى:</Label>
-                <Input
-                    type="date"
-                    value={toDate}
-                    onChange={(e) => setToDate(e.target.value)}
-                    className="w-48"
+                <DatePicker
+                    date={toDate ? new Date(toDate) : undefined}
+                    setDate={(date) => setToDate(date ? format(date, "yyyy-MM-dd") : "")}
+                    placeholder="إلى تاريخ"
                 />
             </div>
 

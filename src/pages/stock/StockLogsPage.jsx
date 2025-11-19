@@ -1,9 +1,10 @@
 import React from 'react';
+import { format } from 'date-fns';
 import { Loader2, AlertCircle, FileText } from 'lucide-react';
 import { Card, CardContent } from '@/components/ui/card';
-import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Button } from '@/components/ui/button';
+import { DatePicker } from '@/components/ui/date-picker';
 import { useStockMovements } from '@/hooks/useStockMovements';
 import { StockMovementsTable } from '@/components/stock/StockMovementsTable';
 
@@ -34,21 +35,19 @@ const StockLogsPage = () => {
 
         <div className="flex items-center gap-2">
           <Label>من:</Label>
-          <Input
-            type="date"
-            value={fromDate}
-            onChange={(e) => setFromDate(e.target.value)}
-            className="w-48"
+          <DatePicker
+            date={fromDate ? new Date(fromDate) : undefined}
+            setDate={(date) => setFromDate(date ? format(date, "yyyy-MM-dd") : "")}
+            placeholder="من تاريخ"
           />
         </div>
 
         <div className="flex items-center gap-2">
           <Label>إلى:</Label>
-          <Input
-            type="date"
-            value={toDate}
-            onChange={(e) => setToDate(e.target.value)}
-            className="w-48"
+          <DatePicker
+            date={toDate ? new Date(toDate) : undefined}
+            setDate={(date) => setToDate(date ? format(date, "yyyy-MM-dd") : "")}
+            placeholder="إلى تاريخ"
           />
         </div>
 
