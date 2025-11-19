@@ -69,9 +69,19 @@ export const useProducts = (type) => {
       await productService.addStock(type, id, stockData);
       toast.success("تم تحديث المخزون");
       fetchProducts();
+      return true; // Indicate success
     } catch (err) {
-      toast.error("فشل تحديث المخزون");
-      console.error(err);
+      console.error("Add stock error:", err);
+      if (err.message && err.message.includes("404")) {
+        toast.error("المنتج غير موجود");
+      } else if (err.message && err.message.includes("Product not found")) {
+        toast.error("المنتج غير موجود");
+      } else {
+        toast.error("فشل تحديث المخزون: " + (err.message || "خطأ غير معروف"));
+      }
+      // Refresh to sync UI with database
+      fetchProducts();
+      throw err; // Re-throw to let modal handle it
     }
   };
 

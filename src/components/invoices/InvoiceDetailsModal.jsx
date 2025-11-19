@@ -4,20 +4,21 @@ import { Button } from '@/components/ui/button';
 import { Card, CardHeader, CardTitle, CardContent } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { formatCurrency } from '@/lib/utils';
+import { getProductTypeLabel } from '@/lib/product.utils';
 
 export const InvoiceDetailsModal = ({ invoice, onClose }) => {
     if (!invoice) return null;
 
     return (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4" onClick={onClose}>
-            <Card 
+            <Card
                 className="w-full max-w-3xl animate-in fade-in zoom-in duration-200"
                 onClick={e => e.stopPropagation()}
             >
                 <CardHeader className="border-b">
                     <CardTitle className="flex justify-between items-center">
                         <span>تفاصيل الفاتورة #{invoice.id}</span>
-                        <Button variant="ghost" size="icon" onClick={onClose}>×</Button> 
+                        <Button variant="ghost" size="icon" onClick={onClose}>×</Button>
                     </CardTitle>
                 </CardHeader>
                 <CardContent className="pt-6">
@@ -58,8 +59,7 @@ export const InvoiceDetailsModal = ({ invoice, onClose }) => {
                                             <td className="p-3">#{detail.productId}</td>
                                             <td className="p-3">
                                                 <Badge variant="outline">
-                                                    {detail.productType === 'iron' ? 'حديد' : 
-                                                     detail.productType === 'wire' ? 'سلك' : 'شريط'}
+                                                    {getProductTypeLabel(detail.productType)}
                                                 </Badge>
                                             </td>
                                             <td className="p-3">{detail.quantity}</td>

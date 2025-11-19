@@ -1,38 +1,23 @@
-import React, { useState, useEffect } from 'react';
-import { stockService } from '@/services/stockService';
+import React from 'react';
 import { Loader2, AlertCircle, FileText } from 'lucide-react';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Badge } from '@/components/ui/badge';
+import { Card, CardContent } from '@/components/ui/card';
+import { Input } from '@/components/ui/input';
+import { Label } from '@/components/ui/label';
+import { Button } from '@/components/ui/button';
+import { useStockMovements } from '@/hooks/useStockMovements';
+import { StockMovementsTable } from '@/components/stock/StockMovementsTable';
 
 const StockLogsPage = () => {
-  const [movements, setMovements] = useState([]);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState(null);
-
-  useEffect(() => {
-    const loadMovements = async () => {
-      try {
-        const data = await stockService.getAllMovements();
-        setMovements(data);
-        setError(null);
-      } catch (e) {
-        console.error('Failed to load stock movements:', e);
-        setError('فشل تحميل حركات المخزون');
-      } finally {
-        setLoading(false);
-      }
-    };
-    loadMovements();
-  }, []);
-
-  const getProductTypeArabic = (type) => {
-    switch (type) {
-      case 'iron': return 'حديد';
-      case 'wire': return 'واير';
-      case 'silk_strip': return 'شريط حريري';
-      default: return type;
-    }
-  };
+  const {
+    movements,
+    loading,
+    error,
+    fromDate,
+    setFromDate,
+    toDate,
+    setToDate,
+    handleClearFilters,
+  } = useStockMovements();
 
   return (
     <div className="p-6 space-y-6 min-h-screen" dir="rtl">
@@ -41,9 +26,41 @@ const StockLogsPage = () => {
         <p className="text-muted-foreground">عرض جميع حركات الوارد والصادر بالتفصيل</p>
       </div>
 
+      {/* Date Range Filter UI */}
+      <div className="flex items-center gap-4 border p-4 rounded-lg bg-white shadow-sm">
+        <h3 className="text-md font-medium text-gray-700 shrink-0">
+          تصفية التاريخ:
+        </h3>
+
+        <div className="flex items-center gap-2">
+          <Label>من:</Label>
+          <Input
+            type="date"
+            value={fromDate}
+            onChange={(e) => setFromDate(e.target.value)}
+            className="w-48"
+          />
+        </div>
+
+        <div className="flex items-center gap-2">
+          <Label>إلى:</Label>
+          <Input
+            type="date"
+            value={toDate}
+            onChange={(e) => setToDate(e.target.value)}
+            className="w-48"
+          />
+        </div>
+
+        <Button onClick={handleClearFilters} variant="ghost" size="sm">
+          مسح
+        </Button>
+      </div>
+
       {error && (
         <div className="bg-red-50 text-red-600 p-4 rounded-md flex items-center gap-2">
-          <AlertCircle className="h-5 w-5" /> {error}
+          <AlertCircle className="h-5 w-5" />
+          {error}
         </div>
       )}
 
@@ -59,41 +76,7 @@ const StockLogsPage = () => {
               <p className="text-gray-500">لا توجد حركات مخزون مسجلة</p>
             </div>
           ) : (
-            <div className="overflow-x-auto">
-              <table className="w-full text-sm text-right">
-                <thead className="border-b">
-                  <tr>
-                    <th className="p-3 font-medium text-gray-500">التاريخ</th>
-                    <th className="p-3 font-medium text-gray-500">الساعة</th>
-                    <th className="p-3 font-medium text-gray-500">نوع المنتج</th>
-                    <th className="p-3 font-medium text-gray-500">الكمية</th>
-                    <th className="p-3 font-medium text-gray-500">السعر</th>
-                    <th className="p-3 font-medium text-gray-500">النوع</th>
-                    <th className="p-3 font-medium text-gray-500">الملاحظات</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {movements.map((movement) => (
-                    <tr key={movement.id} className="border-b hover:bg-gray-50 transition-colors">
-                      <td className="p-3">
-                        {new Date(movement.movementDate).toLocaleDateString('ar-EG')}
-                      </td>
-                      <td className="p-3">{new Date(movement.movementDate).toLocaleTimeString('ar-EG')}</td>
-                      <td className="p-3">{getProductTypeArabic(movement.productType)}</td>
-                      <td className="p-3 font-medium">{movement.quantity}</td>
-                      <td className="p-3">{movement.purchasePrice}</td>
-                      <td className="p-3">
-                        <Badge variant={movement.movementType === 'in' ? 'default' : 'destructive'} 
-                               className={movement.movementType === 'in' ? 'bg-green-500' : 'bg-red-500'}>
-                          {movement.movementType === 'in' ? 'وارد' : 'صادر'}
-                        </Badge>
-                      </td>
-                      <td className="p-3 text-gray-500 max-w-xs truncate">{movement.notes || '-'}</td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
-            </div>
+            <StockMovementsTable movements={movements} />
           )}
         </CardContent>
       </Card>

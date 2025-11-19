@@ -1,6 +1,7 @@
 import React from 'react';
 import { Plus, Trash2, Pencil } from 'lucide-react';
 import { formatCurrency } from '../../lib/utils';
+import { getStockBadgeVariant, getStockStatusText } from '@/lib/product.utils';
 import { Badge } from '../../components/ui/badge';
 import { Button } from '../../components/ui/button';
 
@@ -52,8 +53,11 @@ const ProductTable = ({ products, onDelete, onAddStock, onEdit = () => { } }) =>
               <td className="p-4 align-middle text-gray-600">{formatCurrency(p.balance || 0)}</td>
 
               <td className="p-4 align-middle">
-                <Badge variant={(p.totalQuantity || 0) < 10 ? "destructive" : "default"} className={(p.totalQuantity || 0) < 10 ? "bg-red-500" : "bg-green-600 hover:bg-green-700"}>
-                  {(p.totalQuantity || 0) < 10 ? "منخفض" : "متوفر"}
+                <Badge 
+                  variant={getStockBadgeVariant(p.totalQuantity || 0)} 
+                  className={getStockBadgeVariant(p.totalQuantity || 0) === "destructive" ? "bg-red-500" : "bg-green-600 hover:bg-green-700"}
+                >
+                  {getStockStatusText(p.totalQuantity || 0)}
                 </Badge>
               </td>
               <td className="p-4 align-middle flex gap-2">
