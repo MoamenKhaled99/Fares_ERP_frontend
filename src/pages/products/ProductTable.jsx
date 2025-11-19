@@ -25,8 +25,9 @@ const ProductTable = ({ products, onDelete, onAddStock, onEdit = () => { } }) =>
               <th className="h-12 px-4 align-middle font-medium text-gray-500">الوصف</th>
             )}
             <th className="h-12 px-4 align-middle font-medium text-gray-500">سعر الوحدة</th>
-            <th className="h-12 px-4 align-middle font-medium text-gray-500">الكمية</th>
-            <th className="h-12 px-4 align-middle font-medium text-gray-500">الرصيد (القيمة)</th>
+            <th className="h-12 px-4 align-middle font-medium text-gray-500">اجمالى عدد
+            </th>
+            <th className="h-12 px-4 align-middle font-medium text-gray-500">الرصيد </th>
             <th className="h-12 px-4 align-middle font-medium text-gray-500">الحالة</th>
             <th className="h-12 px-4 align-middle font-medium text-gray-500">إجراءات</th>
           </tr>

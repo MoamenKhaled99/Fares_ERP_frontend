@@ -8,6 +8,7 @@ import {
   Settings,
   HelpCircle,
   ArrowUpCircle,
+  ArrowRightLeft, 
 } from "lucide-react"
 
 import { NavMain } from "@/components/nav-main"
@@ -55,6 +56,14 @@ export function FaresSidebar({ currentPath, navigate, ...props }) {
         icon: Package,
         isActive: currentPath === "/silk",
       },
+      
+      {
+        title: "سجل المخزون", // ✅ NEW LINK
+        url: "/stock-logs",
+        icon: ArrowRightLeft,
+        isActive: currentPath === "/stock-logs",
+      },
+
       {
         title: "الفواتير",
         url: "/invoices",
@@ -71,6 +80,7 @@ export function FaresSidebar({ currentPath, navigate, ...props }) {
           },
         ],
       },
+      
     ],
     navSecondary: [
       {

@@ -5,6 +5,7 @@ import DashboardPageNew from '../pages/dashboard/DashboardNew';
 import ProductsPage from '../pages/products';
 import InvoiceCreator from '../pages/invoices/InvoiceCreator';
 import InvoicesList from '../pages/invoices/InvoicesList';
+import StockLogsPage from '../pages/stock/StockLogsPage';
 
 // NOTE: For a full desktop app, you would likely use 'react-router-dom'.
 // This simple state-based router works perfectly for a single-window electron app.
@@ -20,8 +21,8 @@ const AppRouter = () => {
       case '/wires': return <ProductsPage title="الويرات" type="wires" />;
       case '/silk': return <ProductsPage title="الشرائط الحريرية" type="silk-strips" />;
       case '/invoices': return <InvoicesList navigate={navigate} />;
-
       case '/invoices/new': return <InvoiceCreator />;
+      case '/stock-logs': return <StockLogsPage />; 
       default: return <DashboardPageNew />;
     }
   };
