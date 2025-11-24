@@ -24,7 +24,12 @@ class ApiClient {
     }
   }
 
-  get(endpoint) {
+  get(endpoint, options = {}) {
+    // Handle query parameters
+    if (options.params) {
+      const queryString = new URLSearchParams(options.params).toString();
+      endpoint = queryString ? `${endpoint}?${queryString}` : endpoint;
+    }
     return this.request(endpoint, { method: "GET" });
   }
   post(endpoint, body) {

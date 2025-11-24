@@ -14,6 +14,14 @@ const InvoiceCreator = () => {
     setQuantity,
     sellingPrice,
     setSellingPrice,
+    purchasePrice,
+    setPurchasePrice,
+    productName,
+    setProductName,
+    invoiceType,
+    setInvoiceType,
+    invoiceDate,
+    setInvoiceDate,
     notes,
     setNotes,
     lineItems,
@@ -45,6 +53,14 @@ const InvoiceCreator = () => {
           setQuantity={setQuantity}
           sellingPrice={sellingPrice}
           setSellingPrice={setSellingPrice}
+          purchasePrice={purchasePrice}
+          setPurchasePrice={setPurchasePrice}
+          productName={productName}
+          setProductName={setProductName}
+          invoiceType={invoiceType}
+          setInvoiceType={setInvoiceType}
+          invoiceDate={invoiceDate}
+          setInvoiceDate={setInvoiceDate}
           onAddItem={handleAddItem}
           disabled={saving}
         />

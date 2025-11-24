@@ -9,6 +9,21 @@ import { getProductTypeLabel } from '@/lib/product.utils';
 export const InvoiceDetailsModal = ({ invoice, onClose }) => {
     if (!invoice) return null;
 
+    const renderProductName = (detail) => {
+        if (detail.productName && detail.productName.trim() !== '') return detail.productName;
+        // Fallbacks based on product type and ID when name isn't stored in detail
+        switch (detail.productType) {
+            case 'silk_strip':
+                return `شريط حريري #${detail.productId}`;
+            case 'iron':
+                return `حدايد #${detail.productId}`;
+            case 'wire':
+                return `واير #${detail.productId}`;
+            default:
+                return '—';
+        }
+    };
+
     return (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4" onClick={onClose}>
             <Card
@@ -45,7 +60,7 @@ export const InvoiceDetailsModal = ({ invoice, onClose }) => {
                             <table className="w-full text-sm text-right">
                                 <thead className="bg-gray-50">
                                     <tr>
-                                        <th className="p-3 font-medium text-gray-500">المنتج</th>
+                                        <th className="p-3 font-medium text-gray-500">اسم المنتج</th>
                                         <th className="p-3 font-medium text-gray-500">النوع</th>
                                         <th className="p-3 font-medium text-gray-500">الكمية</th>
                                         <th className="p-3 font-medium text-gray-500">سعر الشراء</th>
@@ -56,7 +71,7 @@ export const InvoiceDetailsModal = ({ invoice, onClose }) => {
                                 <tbody>
                                     {invoice.details && invoice.details.map((detail, idx) => (
                                         <tr key={idx} className="border-t">
-                                            <td className="p-3">#{detail.productId}</td>
+                                            <td className="p-3 font-medium">{renderProductName(detail)}</td>
                                             <td className="p-3">
                                                 <Badge variant="outline">
                                                     {getProductTypeLabel(detail.productType)}

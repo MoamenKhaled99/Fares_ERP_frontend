@@ -1,7 +1,8 @@
 import React, { useState } from 'react';
-import { Plus, AlertCircle, Loader2 } from 'lucide-react';
+import { Plus, AlertCircle, Loader2, Search } from 'lucide-react';
 import { useProducts } from '../../hooks/useProducts';
 import { Button } from '../../components/ui/button';
+import { Input } from '../../components/ui/input';
 import { Card, CardContent, CardHeader, CardTitle } from '../../components/ui/card';
 import ProductTable from './ProductTable';
 import AddProductForm from './AddProductForm';
@@ -10,7 +11,8 @@ import EditProductModal from './EditProductModal';
 import DeleteConfirmationModal from './DeleteConfirmationModal';
 
 const ProductsPage = ({ title = "المنتجات", type = "irons" }) => {
-  const { data, loading, error, addProduct, removeProduct, addStock, updateProduct } = useProducts(type);
+  const [searchQuery, setSearchQuery] = useState('');
+  const { data, loading, error, addProduct, removeProduct, addStock, updateProduct } = useProducts(type, searchQuery);
   const [isAddOpen, setIsAddOpen] = useState(false);
   const [stockItem, setStockItem] = useState(null);
   const [editItem, setEditItem] = useState(null);
@@ -46,6 +48,22 @@ const ProductsPage = ({ title = "المنتجات", type = "irons" }) => {
       )}
 
       <Card>
+        <CardHeader>
+          {type !== 'silk-strips' && (
+            <div className="flex items-center gap-4">
+              <div className="relative flex-1">
+                <Search className="absolute right-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400" />
+                <Input
+                  type="text"
+                  placeholder="ابحث بالاسم أو الوصف..."
+                  value={searchQuery}
+                  onChange={(e) => setSearchQuery(e.target.value)}
+                  className="pr-10"
+                />
+              </div>
+            </div>
+          )}
+        </CardHeader>
         <CardContent className="pt-6">
           {loading ? (
             <div className="flex justify-center py-8"><Loader2 className="h-8 w-8 animate-spin text-blue-600" /></div>

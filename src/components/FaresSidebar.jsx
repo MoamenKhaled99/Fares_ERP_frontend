@@ -39,31 +39,33 @@ export function FaresSidebar({ currentPath, navigate, ...props }) {
         isActive: currentPath === "/",
       },
       {
-        title: "الحدايد",
-        url: "/irons",
-        icon: Anchor,
-        isActive: currentPath === "/irons",
-      },
-      {
-        title: "الويرات",
-        url: "/wires",
-        icon: Cable,
-        isActive: currentPath === "/wires",
-      },
-      {
-        title: "الشرائط",
-        url: "/silk",
+        title: "أصناف",
         icon: Package,
-        isActive: currentPath === "/silk",
+        isActive: currentPath === "/irons" || currentPath === "/wires" || currentPath === "/silk",
+        items: [
+          {
+            title: "الحدايد",
+            url: "/irons",
+            isActive: currentPath === "/irons",
+          },
+          {
+            title: "الويرات",
+            url: "/wires",
+            isActive: currentPath === "/wires",
+          },
+          {
+            title: "الشرائط",
+            url: "/silk",
+            isActive: currentPath === "/silk",
+          },
+        ],
       },
-      
       {
-        title: "سجل المخزون", // ✅ NEW LINK
+        title: "سجل المخزون",
         url: "/stock-logs",
         icon: ArrowRightLeft,
         isActive: currentPath === "/stock-logs",
       },
-
       {
         title: "الفواتير",
         url: "/invoices",

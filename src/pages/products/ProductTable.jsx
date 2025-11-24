@@ -10,6 +10,11 @@ const ProductTable = ({ products, onDelete, onAddStock, onEdit = () => { } }) =>
 
   const isSilkStrip = products.length > 0 && (products[0].loadCapacity !== undefined || products[0].safetyFactor !== undefined);
 
+  // Sort products by loadCapacity asc for silk strips as a client-side fallback
+  const sortedProducts = isSilkStrip
+    ? [...products].sort((a, b) => (parseFloat(a.loadCapacity || 0) - parseFloat(b.loadCapacity || 0)))
+    : products;
+
   return (
     <div className="w-full overflow-auto">
       <table className="w-full caption-bottom text-sm text-right">
@@ -34,7 +39,7 @@ const ProductTable = ({ products, onDelete, onAddStock, onEdit = () => { } }) =>
           </tr>
         </thead>
         <tbody className="[&_tr:last-child]:border-0">
-          {products.map((p) => (
+          {sortedProducts.map((p) => (
             <tr key={p.id} className="border-b transition-colors hover:bg-gray-50/50">
               <td className="p-4 align-middle">{p.id}</td>
 

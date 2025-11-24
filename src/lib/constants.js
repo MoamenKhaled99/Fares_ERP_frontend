@@ -12,13 +12,13 @@ export const PRODUCT_TYPE_BACKEND_MAP = {
 };
 
 export const PRODUCT_TYPE_ARABIC = {
-  iron: 'حديد',
+  iron: 'حدايد',
   wire: 'واير',
   silk_strip: 'شريط حريري'
 };
 
 export const PRODUCT_SECTIONS = [
-  { value: 'irons', label: 'الحديد', backendType: 'iron' },
+  { value: 'irons', label: 'الحدايد', backendType: 'iron' },
   { value: 'wires', label: 'الويرات', backendType: 'wire' },
   { value: 'silk-strips', label: 'الشرائط الحريرية', backendType: 'silk_strip' }
 ];

@@ -70,7 +70,7 @@ const EditProductModal = ({ product, type, onSubmit, onClose }) => {
                   required 
                   value={form.description} 
                   onChange={e => setForm({...form, description: e.target.value})} 
-                  placeholder="مثال: حديد تسليح 10مم" 
+                  placeholder="مثال: حدايد تسليح 10مم" 
                 />
               </div>
             )}

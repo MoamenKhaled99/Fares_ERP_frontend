@@ -1,9 +1,8 @@
-// src/hooks/useDashboardData.js (NEW FILE)
+// src/hooks/useDashboardData.js
 import { useState, useEffect } from 'react';
 import { dashboardService } from '@/services/dashboardService';
-import { getMonthPeriodDates } from '@/lib/dashboard.utils'; // Assuming this is imported from your new utils file
 
-export const useDashboardData = (selectedMonth, selectedYear) => {
+export const useDashboardData = (filters = {}) => {
     const [stats, setStats] = useState(null);
     const [salesByType, setSalesByType] = useState([]);
     const [loading, setLoading] = useState(true);
@@ -13,23 +12,14 @@ export const useDashboardData = (selectedMonth, selectedYear) => {
         const loadDashboardData = async () => {
             try {
                 setLoading(true);
-                const { fromDate, toDate } = getMonthPeriodDates(
-                    parseInt(selectedYear), 
-                    parseInt(selectedMonth)
-                );
 
-                const [statsResponse, salesResponse, profitResponse] = await Promise.all([
-                    dashboardService.getStats(),
+                const [statsResponse, salesResponse] = await Promise.all([
+                    dashboardService.getStats(filters),
                     dashboardService.getSalesByType(),
-                    dashboardService.getProfitsByPeriod(fromDate, toDate) 
                 ]);
                 
-                const statsData = statsResponse.data || {};
-                const salesDataObj = salesResponse.data || {};
-                const profitData = profitResponse.data || {};
-
-                // OVERWRITE totalProfit with the filtered value
-                statsData.totalProfit = profitData.totalProfit; 
+                const statsData = statsResponse.data?.data || statsResponse.data || {};
+                const salesDataObj = salesResponse.data?.data || salesResponse.data || {};
                 
                 setStats(statsData);
 
@@ -46,7 +36,10 @@ export const useDashboardData = (selectedMonth, selectedYear) => {
                 console.error("Dashboard data failed:", e);
                 setError(e.message || 'فشل تحميل البيانات');
                 setStats({ 
-                    totalProfit: 0, 
+                    totalProfit: 0,
+                    totalSales: 0,
+                    totalCost: 0,
+                    totalStockValue: 0,
                     invoiceCount: 0, 
                     lowStockItems: [], 
                     recentInvoices: [] 
@@ -57,7 +50,7 @@ export const useDashboardData = (selectedMonth, selectedYear) => {
             }
         };
         loadDashboardData();
-    }, [selectedMonth, selectedYear]); 
+    }, [filters.day, filters.month, filters.year]); 
 
     return { stats, salesByType, loading, error };
 };

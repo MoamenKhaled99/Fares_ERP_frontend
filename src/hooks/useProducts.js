@@ -2,7 +2,7 @@ import { useState, useEffect } from "react";
 import { productService } from "../services/productService";
 import { toast } from "sonner"; // ✅ FIX: Import toast from the sonner package
 
-export const useProducts = (type) => {
+export const useProducts = (type, search = '') => {
   const [data, setData] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
@@ -10,7 +10,7 @@ export const useProducts = (type) => {
   const fetchProducts = async () => {
     setLoading(true);
     try {
-      const result = await productService.getAll(type);
+      const result = await productService.getAll(type, search);
       setData(Array.isArray(result) ? result : []);
       setError(null);
     } catch (err) {
@@ -22,8 +22,15 @@ export const useProducts = (type) => {
   };
 
   useEffect(() => {
-    if (type) fetchProducts();
-  }, [type]);
+    if (!type) return;
+    
+    // Debounce search
+    const timeoutId = setTimeout(() => {
+      fetchProducts();
+    }, 300);
+
+    return () => clearTimeout(timeoutId);
+  }, [type, search]);
 
   const addProduct = async (productData) => {
     try {

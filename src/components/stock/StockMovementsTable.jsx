@@ -19,6 +19,7 @@ export const StockMovementsTable = ({ movements }) => {
             <th className="p-3 font-medium text-gray-500">التاريخ</th>
             <th className="p-3 font-medium text-gray-500">الساعة</th>
             <th className="p-3 font-medium text-gray-500">نوع المنتج</th>
+            <th className="p-3 font-medium text-gray-500">اسم المنتج</th>
             <th className="p-3 font-medium text-gray-500">الكمية</th>
             <th className="p-3 font-medium text-gray-500">السعر</th>
             <th className="p-3 font-medium text-gray-500">النوع</th>
@@ -37,6 +38,7 @@ export const StockMovementsTable = ({ movements }) => {
                   {new Date(movement.movementDate).toLocaleTimeString('ar-EG')}
                 </td>
                 <td className="p-3">{getProductTypeArabic(movement.productType)}</td>
+                <td className="p-3 font-medium">{movement.productName || '-'}</td>
                 <td className="p-3 font-medium">{movement.quantity}</td>
                 <td className="p-3">{formatCurrency(movement.purchasePrice)}</td>
                 <td className="p-3">
