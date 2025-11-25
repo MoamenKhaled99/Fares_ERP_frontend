@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import { Button } from '../../components/ui/button';
 import { Input } from '../../components/ui/input';
 import { Label } from '../../components/ui/label';
@@ -7,16 +8,15 @@ import { Loader2 } from 'lucide-react';
 import { toast } from "sonner"; 
 
 const EditProductModal = ({ product, type, onSubmit, onClose }) => {
+  const { t } = useTranslation();
   const isSilkStrip = type === 'silk-strips';
   
-  // Use product data for initial form state
   const [form, setForm] = useState({ 
     description: product.description || product.name || '', 
     unitPrice: product.unitPrice.toString(), 
-    totalQuantity: product.totalQuantity.toString(), // Include totalQuantity for visual reference
-    // Fields for silk strips
+    totalQuantity: product.totalQuantity.toString(),
     loadCapacity: product.loadCapacity?.toString() || '',
-    safetyFactor: product.safetyFactor?.toString() || '',
+    safetyFactor: product.safetyFactor?.toString() || '', // Keep as string
     unitMeter: product.unitMeter?.toString() || '' 
   });
   const [loading, setLoading] = useState(false);
@@ -32,7 +32,8 @@ const EditProductModal = ({ product, type, onSubmit, onClose }) => {
 
       if (isSilkStrip) {
          payload.loadCapacity = parseFloat(form.loadCapacity);
-         payload.safetyFactor = parseFloat(form.safetyFactor);
+         // ✅ FIX: Do NOT parse float for safetyFactor, keep as string (e.g., "1:5")
+         payload.safetyFactor = form.safetyFactor; 
          payload.unitMeter = parseFloat(form.unitMeter);
       } else {
          payload.description = form.description;
@@ -49,34 +50,31 @@ const EditProductModal = ({ product, type, onSubmit, onClose }) => {
   };
 
   return (
-    // This fixed div with bg-black/50 creates the modal overlay.
-    // It captures clicks outside the modal content to close it.
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4" onClick={onClose}>
       <Card 
         className="w-full max-w-md animate-in fade-in zoom-in duration-200"
-        // Prevent clicks inside the card from closing the modal immediately
         onClick={e => e.stopPropagation()} 
       >
         <CardHeader>
-          <CardTitle>تعديل المنتج: {product.description || product.name || `ID: ${product.id}`}</CardTitle>
+          <CardTitle>{t('products.editProduct')}: {product.description || product.name || `ID: ${product.id}`}</CardTitle>
         </CardHeader>
         <CardContent>
           <form onSubmit={handleSubmit} className="space-y-4">
              
             {!isSilkStrip && (
               <div className="space-y-2">
-                <Label>اسم المنتج / الوصف</Label>
+                <Label>{t('products.productName')}</Label>
                 <Input 
                   required 
                   value={form.description} 
                   onChange={e => setForm({...form, description: e.target.value})} 
-                  placeholder="مثال: حدايد تسليح 10مم" 
+                  placeholder={t('products.productNamePlaceholder')} 
                 />
               </div>
             )}
 
             <div className="space-y-2">
-              <Label>سعر الشراء الحالي (للوحدة)</Label>
+              <Label>{t('products.currentPurchasePrice')}</Label>
               <Input 
                 required 
                 type="number" 
@@ -87,20 +85,20 @@ const EditProductModal = ({ product, type, onSubmit, onClose }) => {
             </div>
             
             <div className="space-y-2">
-              <Label>الكمية الحالية في المخزون</Label>
+              <Label>{t('products.currentStockQuantity')}</Label>
               <Input 
-                disabled // This is for display only
+                disabled
                 value={form.totalQuantity} 
               />
               <p className="text-xs text-gray-500">
-                ⚠️ لتغيير الكمية، استخدم زر "إضافة مخزون".
+                {t('products.changeQuantityNote')}
               </p>
             </div>
           
             {isSilkStrip && (
               <>
                 <div className="space-y-2">
-                   <Label>حمولة الطن (Load Capacity)</Label>
+                   <Label>{t('products.loadCapacity')}</Label>
                    <Input 
                      required 
                      type="number" 
@@ -111,17 +109,17 @@ const EditProductModal = ({ product, type, onSubmit, onClose }) => {
                 </div>
                 <div className="grid grid-cols-2 gap-4">
                   <div className="space-y-2">
-                    <Label>معامل الأمان (Safety Factor)</Label>
+                    <Label>{t('products.safetyFactor')}</Label>
+                    {/* ✅ FIX: Changed type to text to allow "1:5" format */}
                     <Input 
                       required 
-                      type="number" 
-                      step="0.01"
+                      type="text" 
                       value={form.safetyFactor} 
                       onChange={e => setForm({...form, safetyFactor: e.target.value})} 
                     />
                   </div>
                   <div className="space-y-2">
-                    <Label>المتر (Unit Meter)</Label>
+                    <Label>{t('products.unitMeter')}</Label>
                     <Input 
                       required 
                       type="number" 
@@ -135,9 +133,9 @@ const EditProductModal = ({ product, type, onSubmit, onClose }) => {
             )}
 
             <div className="flex justify-end gap-2 pt-4">
-              <Button type="button" variant="outline" onClick={onClose}>إلغاء</Button>
+              <Button type="button" variant="outline" onClick={onClose}>{t('common.cancel')}</Button>
               <Button type="submit" disabled={loading}>
-                  {loading ? <><Loader2 className="ml-2 h-4 w-4 animate-spin" /> جاري التحديث...</> : 'حفظ التغييرات'}
+                  {loading ? <><Loader2 className="ml-2 h-4 w-4 animate-spin" /> {t('products.updating')}</> : t('products.saveChanges')}
               </Button>
             </div>
           </form>

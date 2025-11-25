@@ -19,9 +19,9 @@ export const getProductTypeArabic = (type) => {
 };
 
 export const getProductTypeLabel = (productType) => {
-  // Note: The invoice details usually contain backend types ('iron', 'wire')
   return PRODUCT_TYPE_ARABIC[productType] || productType;
 };
+
 /**
  * Check if product is low stock
  */
@@ -40,16 +40,17 @@ export const isCriticalStock = (quantity) => {
  * Get stock status badge variant
  */
 export const getStockBadgeVariant = (quantity) => {
-  return isLowStock(quantity) ? "destructive" : "default";
+  if (isLowStock(quantity)) return "destructive";
+  return "default";
 };
 
 /**
- * Get stock status text
+ * Get stock status text (Returns Translation Key now)
  */
 export const getStockStatusText = (quantity) => {
-  if (isCriticalStock(quantity)) return "حرج";
-  if (isLowStock(quantity)) return "منخفض";
-  return "متوفر";
+  if (isCriticalStock(quantity)) return "products.critical";
+  if (isLowStock(quantity)) return "products.lowStock";
+  return "products.available";
 };
 
 /**

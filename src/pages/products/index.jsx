@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import { Plus, AlertCircle, Loader2, Search } from 'lucide-react';
 import { useProducts } from '../../hooks/useProducts';
 import { Button } from '../../components/ui/button';
@@ -11,6 +12,7 @@ import EditProductModal from './EditProductModal';
 import DeleteConfirmationModal from './DeleteConfirmationModal';
 
 const ProductsPage = ({ title = "المنتجات", type = "irons" }) => {
+  const { t } = useTranslation();
   const [searchQuery, setSearchQuery] = useState('');
   const { data, loading, error, addProduct, removeProduct, addStock, updateProduct } = useProducts(type, searchQuery);
   const [isAddOpen, setIsAddOpen] = useState(false);
@@ -29,14 +31,14 @@ const ProductsPage = ({ title = "المنتجات", type = "irons" }) => {
   }
 
   return (
-    <div className="space-y-6 p-8 min-h-screen" dir="rtl">
+    <div className="space-y-6 p-8 min-h-screen">
       <div className="flex items-center justify-between">
         <div>
           <h2 className="text-4xl font-bold text-gray-900 drop-shadow-sm">{title}</h2>
-          <p className="text-gray-500 text-lg mt-1">إدارة مخزون {title} والمبيعات</p>
+          <p className="text-gray-500 text-lg mt-1">{t('products.management', { title })}</p>
         </div>
         <Button onClick={() => setIsAddOpen(true)} size="lg" className="shadow-xl">
-          <Plus className="ml-2 h-5 w-5" /> إضافة منتج
+          <Plus className="ml-2 h-5 w-5" /> {t('products.add')}
         </Button>
       </div>
 
@@ -55,7 +57,7 @@ const ProductsPage = ({ title = "المنتجات", type = "irons" }) => {
                 <Search className="absolute right-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400" />
                 <Input
                   type="text"
-                  placeholder="ابحث بالاسم أو الوصف..."
+                  placeholder={t('products.search')}
                   value={searchQuery}
                   onChange={(e) => setSearchQuery(e.target.value)}
                   className="pr-10"
@@ -81,7 +83,7 @@ const ProductsPage = ({ title = "المنتجات", type = "irons" }) => {
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4">
           <Card className="w-full max-w-md animate-in fade-in zoom-in duration-200">
             <CardHeader>
-              <CardTitle>إضافة {title} جديد</CardTitle>
+              <CardTitle>{t('products.addNew', { title })}</CardTitle>
             </CardHeader>
             <CardContent>
               {/* Pass the type prop here so the form knows which fields to show */}

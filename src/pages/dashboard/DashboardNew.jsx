@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
-import { DollarSign, ArrowRightLeft, ShoppingCart, AlertTriangle, TrendingUp, TrendingDown } from 'lucide-react';
-import { formatCurrency } from '@/lib/utils';
+import { useTranslation } from 'react-i18next';
+import { DollarSign, AlertTriangle, TrendingUp, TrendingDown, ShoppingCart } from 'lucide-react';
+import { formatCurrency, formatNumber } from '@/lib/number.utils'; // ✅ CHANGED IMPORT
 import { useDashboardData } from '@/hooks/useDashboardData';
 import { StatCard } from '@/components/dashboard/StatCard';
 import { SalesChart } from '@/components/dashboard/SalesChart';
@@ -10,14 +11,14 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
-import { Button } from '@/components/ui/button';
 
 const DashboardPageNew = () => {
+  const { t } = useTranslation();
   const [selectedInvoice, setSelectedInvoice] = useState(null);
   
   // State for filtering
   const currentDate = new Date();
-  const [filterType, setFilterType] = useState('month'); // 'day', 'month', 'year', 'all'
+  const [filterType, setFilterType] = useState('month'); 
   const [selectedDay, setSelectedDay] = useState(currentDate.getDate());
   const [selectedMonth, setSelectedMonth] = useState(currentDate.getMonth() + 1);
   const [selectedYear, setSelectedYear] = useState(currentDate.getFullYear());
@@ -41,20 +42,21 @@ const DashboardPageNew = () => {
   const recentInvoices = stats?.recentInvoices || [];
   
   const MONTHS = [
-    'يناير', 'فبراير', 'مارس', 'أبريل', 'مايو', 'يونيو',
-    'يوليو', 'أغسطس', 'سبتمبر', 'أكتوبر', 'نوفمبر', 'ديسمبر'
+    t('dashboard.january'), t('dashboard.february'), t('dashboard.march'), t('dashboard.april'),
+    t('dashboard.may'), t('dashboard.june'), t('dashboard.july'), t('dashboard.august'),
+    t('dashboard.september'), t('dashboard.october'), t('dashboard.november'), t('dashboard.december')
   ];
   
   const YEARS = Array.from({ length: 10 }, (_, i) => currentDate.getFullYear() - 5 + i);
   
   return (
-    <div className="p-6 space-y-6 min-h-screen" dir="rtl">
+    <div className="p-6 space-y-6 min-h-screen">
       
       {/* Header and Filters */}
       <div className="flex justify-between items-start space-y-2">
         <div className="space-y-2">
-          <h2 className="text-3xl font-bold tracking-tight">لوحة التحكم</h2>
-          <p className="text-muted-foreground">نظرة عامة على الأداء والإحصائيات</p>
+          <h2 className="text-3xl font-bold tracking-tight">{t('dashboard.title')}</h2>
+          <p className="text-muted-foreground">{t('dashboard.overview')}</p>
         </div>
         
         {/* Filter Controls */}
@@ -62,23 +64,23 @@ const DashboardPageNew = () => {
           <CardContent className="pt-6">
             <div className="flex gap-3 items-end">
               <div className="space-y-2">
-                <Label>نوع الفلتر</Label>
+                <Label>{t('dashboard.filterType')}</Label>
                 <Select value={filterType} onValueChange={setFilterType}>
                   <SelectTrigger className="w-32">
                     <SelectValue />
                   </SelectTrigger>
                   <SelectContent>
-                    <SelectItem value="all">الكل</SelectItem>
-                    <SelectItem value="day">يوم</SelectItem>
-                    <SelectItem value="month">شهر</SelectItem>
-                    <SelectItem value="year">سنة</SelectItem>
+                    <SelectItem value="all">{t('dashboard.all')}</SelectItem>
+                    <SelectItem value="day">{t('dashboard.day')}</SelectItem>
+                    <SelectItem value="month">{t('dashboard.month')}</SelectItem>
+                    <SelectItem value="year">{t('dashboard.year')}</SelectItem>
                   </SelectContent>
                 </Select>
               </div>
               
               {filterType === 'day' && (
                 <div className="space-y-2">
-                  <Label>اليوم</Label>
+                  <Label>{t('dashboard.day')}</Label>
                   <Input 
                     type="number" 
                     min="1" 
@@ -92,7 +94,7 @@ const DashboardPageNew = () => {
               
               {(filterType === 'day' || filterType === 'month') && (
                 <div className="space-y-2">
-                  <Label>الشهر</Label>
+                  <Label>{t('dashboard.month')}</Label>
                   <Select value={String(selectedMonth)} onValueChange={v => setSelectedMonth(parseInt(v))}>
                     <SelectTrigger className="w-32">
                       <SelectValue />
@@ -108,7 +110,7 @@ const DashboardPageNew = () => {
               
               {filterType !== 'all' && (
                 <div className="space-y-2">
-                  <Label>السنة</Label>
+                  <Label>{t('dashboard.year')}</Label>
                   <Select value={String(selectedYear)} onValueChange={v => setSelectedYear(parseInt(v))}>
                     <SelectTrigger className="w-24">
                       <SelectValue />
@@ -132,12 +134,12 @@ const DashboardPageNew = () => {
           <CardHeader>
             <CardTitle className="flex items-center gap-2 text-red-700">
               <AlertTriangle className="h-5 w-5" />
-              خطأ في تحميل البيانات
+              {t('dashboard.errorLoading')}
             </CardTitle>
           </CardHeader>
           <CardContent>
             <p className="text-sm text-red-600">{error}</p>
-            <p className="text-xs text-red-500 mt-2">تأكد من تشغيل الخادم على المنفذ الصحيح</p>
+            <p className="text-xs text-red-500 mt-2">{t('dashboard.checkServer')}</p>
           </CardContent>
         </Card>
       )}
@@ -148,7 +150,7 @@ const DashboardPageNew = () => {
           <CardHeader className="pb-2">
             <CardTitle className="flex items-center gap-2 text-orange-700 text-lg">
               <AlertTriangle className="h-5 w-5" />
-              تنبيه: مخزون منخفض
+              {t('dashboard.lowStockAlert')}
             </CardTitle>
           </CardHeader>
           <CardContent>
@@ -157,8 +159,11 @@ const DashboardPageNew = () => {
                 <div key={idx} className="text-sm text-orange-800 flex items-center gap-2">
                   <span className="w-2 h-2 rounded-full bg-orange-500"></span>
                   <span className="font-semibold">{item.name}</span>
-                  <span className="text-orange-600">({item.type === 'silk_strip' ? 'شريط' : item.type === 'iron' ? 'حدايد' : 'واير'})</span>
-                  <span>- الكمية المتبقية: <span className="font-bold">{item.quantity}</span></span>
+                  <span className="text-orange-600">
+                    ({item.type === 'silk_strip' ? t('dashboard.silkStrip') : 
+                      item.type === 'iron' ? t('dashboard.iron') : t('dashboard.wire')})
+                  </span>
+                  <span>- {t('dashboard.remainingQuantity')}: <span className="font-bold">{formatNumber(item.quantity)}</span></span>
                 </div>
               ))}
             </div>
@@ -166,56 +171,55 @@ const DashboardPageNew = () => {
         </Card>
       )}
 
-      {/* Stats Grid with New Metrics */}
+      {/* Stats Grid */}
       <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
         <StatCard 
           loading={loading}
-          title="إجمالي المبيعات" 
+          title={t('dashboard.totalSales')}
           value={stats?.totalSales ? formatCurrency(stats.totalSales) : '-'} 
           icon={TrendingUp} 
           color="blue"
-          footer="إجمالي قيمة المبيعات"
+          footer={t('dashboard.totalSalesValue')}
         />
         <StatCard 
           loading={loading}
-          title="صافي الأرباح" 
+          title={t('dashboard.totalProfit')}
           value={stats?.totalProfit ? formatCurrency(stats.totalProfit) : '-'} 
           icon={DollarSign} 
           color="green"
           trend={true}
-          footer="الأرباح الصافية"
+          footer={t('dashboard.netProfit')}
         />
         <StatCard 
           loading={loading}
-          title="التكاليف" 
+          title={t('dashboard.totalCost')}
           value={stats?.totalCost ? formatCurrency(stats.totalCost) : '-'} 
           icon={TrendingDown} 
           color="orange"
-          footer="إجمالي تكلفة المبيعات"
+          footer={t('dashboard.totalCostOfSales')}
         />
         <StatCard 
           loading={loading}
-          title="قيمة المخزون" 
+          title={t('dashboard.totalStockValue')}
           value={stats?.totalStockValue ? formatCurrency(stats.totalStockValue) : '-'} 
           icon={ShoppingCart} 
           color="purple"
-          footer="القيمة الإجمالية للمخزون"
+          footer={t('dashboard.totalInventoryValue')}
         />
       </div>
 
-      {/* Charts Section (SRP: SalesChart component) */}
+      {/* Charts Section */}
       <div className="grid gap-4 md:grid-cols-2">
         <SalesChart salesData={salesByType} loading={loading} />
       </div>
 
-      {/* Recent Invoices Table (SRP: RecentInvoices component) */}
+      {/* Recent Invoices Table */}
       <RecentInvoices 
         recentInvoices={recentInvoices} 
         loading={loading}
         setSelectedInvoice={setSelectedInvoice}
       />
       
-      {/* Modal Renderer (SRP: Modal Display) */}
       {selectedInvoice && (
         <InvoiceDetailsModal
           invoice={selectedInvoice}

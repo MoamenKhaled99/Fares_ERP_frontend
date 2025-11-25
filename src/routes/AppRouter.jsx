@@ -33,7 +33,8 @@ const AppRouter = () => {
       <SidebarInset>
         {/* Mobile Header */}
         <header className="flex h-16 shrink-0 items-center gap-2 border-b bg-white/95 backdrop-blur supports-backdrop-filter:bg-white/60 px-4 sticky top-0 z-10">
-          <SidebarTrigger className="-ml-1" />
+          {/* Updated: Added md:hidden to hide trigger on desktop */}
+          <SidebarTrigger className="-ml-1 md:hidden" />
           <div className="flex items-center gap-2 flex-1">
             <span className="font-bold text-xl bg-linear-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">نظام فارس</span>
           </div>

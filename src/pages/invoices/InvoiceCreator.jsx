@@ -1,9 +1,11 @@
 import React from 'react';
+import { useTranslation } from 'react-i18next';
 import { useInvoiceForm } from '@/hooks/useInvoiceForm';
 import { InvoiceForm } from '@/components/invoices/InvoiceForm';
 import { InvoicePreview } from '@/components/invoices/InvoicePreview';
 
 const InvoiceCreator = () => {
+  const { t } = useTranslation();
   const {
     selectedType,
     setSelectedType,
@@ -32,13 +34,13 @@ const InvoiceCreator = () => {
   } = useInvoiceForm();
 
   return (
-    <div className="p-8 space-y-6 min-h-screen" dir="rtl">
+    <div className="p-8 space-y-6 min-h-screen">
       <div className="space-y-2">
         <h2 className="text-4xl font-bold text-white drop-shadow-lg">
-          فاتورة بيع جديدة
+          {t('invoices.createNewInvoice')}
         </h2>
         <p className="text-white/80 text-lg">
-          أنشئ فاتورة بيع جديدة وأضف المنتجات
+          {t('invoices.createNewInvoiceDesc')}
         </p>
       </div>
 

@@ -1,11 +1,10 @@
-// src/components/invoices/InvoiceListTable.jsx (NEW FILE)
 import React from 'react';
+import { useTranslation } from 'react-i18next';
 import { Eye, FileText, Loader2 } from 'lucide-react';
 import { Card, CardContent } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
-import { Skeleton } from '@/components/ui/skeleton';
-import { formatCurrency } from '@/lib/utils';
+import { formatCurrency, formatNumber, formatDate, formatTime } from '@/lib/number.utils'; // ✅ Import new utils
 
 export function InvoiceListTable({
   invoices,
@@ -13,6 +12,8 @@ export function InvoiceListTable({
   navigate,
   setSelectedInvoice,
 }) {
+  const { t } = useTranslation();
+
   if (loading) {
     return (
       <Card>
@@ -31,14 +32,14 @@ export function InvoiceListTable({
         <CardContent className="pt-6">
           <div className="text-center py-12">
             <FileText className="h-12 w-12 text-gray-400 mx-auto mb-4" />
-            <p className="text-gray-500">لا توجد فواتير مسجلة</p>
+            <p className="text-gray-500">{t('invoices.noInvoices')}</p>
             {navigate && (
               <Button
                 variant="link"
                 onClick={() => navigate("/invoices/new")}
                 className="mt-2"
               >
-                إنشاء أول فاتورة
+                {t('invoices.createFirst')}
               </Button>
             )}
           </div>
@@ -54,12 +55,12 @@ export function InvoiceListTable({
           <table className="w-full text-sm text-right">
             <thead className="border-b">
               <tr>
-                <th className="p-3 font-medium text-gray-500">رقم الفاتورة</th>
-                <th className="p-3 font-medium text-gray-500">التاريخ</th>
-                <th className="p-3 font-medium text-gray-500">الساعة</th>
-                <th className="p-3 font-medium text-gray-500">إجمالي الربح</th>
-                <th className="p-3 font-medium text-gray-500">عدد المنتجات</th>
-                <th className="p-3 font-medium text-gray-500">الإجراءات</th>
+                <th className="p-3 font-medium text-gray-500">{t('invoices.invoiceNumber')}</th>
+                <th className="p-3 font-medium text-gray-500">{t('invoices.date')}</th>
+                <th className="p-3 font-medium text-gray-500">{t('invoices.time')}</th>
+                <th className="p-3 font-medium text-gray-500">{t('invoices.totalProfit')}</th>
+                <th className="p-3 font-medium text-gray-500">{t('invoices.itemsCount')}</th>
+                <th className="p-3 font-medium text-gray-500">{t('common.actions')}</th>
               </tr>
             </thead>
             <tbody>
@@ -68,12 +69,12 @@ export function InvoiceListTable({
                   key={invoice.id}
                   className="border-b hover:bg-gray-50 transition-colors"
                 >
-                  <td className="p-3 font-medium">#{invoice.id}</td>
+                  <td className="p-3 font-medium">#{formatNumber(invoice.id)}</td>
                   <td className="p-3">
-                    {new Date(invoice.invoiceDate).toLocaleDateString("ar-EG")}
+                    {formatDate(invoice.invoiceDate)} {/* ✅ Fixed */}
                   </td>
                   <td className="p-3">
-                    {new Date(invoice.invoiceDate).toLocaleTimeString("ar-EG")}
+                    {formatTime(invoice.invoiceDate)} {/* ✅ Fixed */}
                   </td>
                   <td className="p-3">
                     <span className="font-semibold text-green-600">
@@ -82,7 +83,7 @@ export function InvoiceListTable({
                   </td>
                   <td className="p-3">
                     <Badge variant="secondary">
-                      {invoice.details?.length || 0} منتج
+                      {formatNumber(invoice.details?.length || 0)} {t('invoices.itemUnit')}
                     </Badge>
                   </td>
                   <td className="p-3">
@@ -92,7 +93,7 @@ export function InvoiceListTable({
                       onClick={() => setSelectedInvoice(invoice)}
                     >
                       <Eye className="h-4 w-4 ml-2" />
-                      عرض التفاصيل
+                      {t('invoices.viewDetails')}
                     </Button>
                   </td>
                 </tr>

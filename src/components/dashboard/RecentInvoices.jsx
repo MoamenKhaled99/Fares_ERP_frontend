@@ -1,17 +1,19 @@
-// src/components/dashboard/RecentInvoices.jsx (NEW FILE)
 import React from 'react';
+import { useTranslation } from 'react-i18next';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { Skeleton } from '@/components/ui/skeleton';
-import { formatCurrency } from '@/lib/utils';
+import { formatCurrency, formatNumber, formatDate } from '@/lib/number.utils'; // ✅ Import
 import { Button } from '@/components/ui/button';
 import { Eye } from 'lucide-react';
 
 export const RecentInvoices = ({ recentInvoices, loading, setSelectedInvoice }) => {
+    const { t } = useTranslation();
+
     return (
         <Card>
           <CardHeader>
-            <CardTitle>آخر الفواتير</CardTitle>
-            <CardDescription>آخر 5 فواتير تم إنشاؤها</CardDescription>
+            <CardTitle>{t('dashboard.recentInvoices')}</CardTitle>
+            <CardDescription>{t('dashboard.recentInvoicesDesc')}</CardDescription>
           </CardHeader>
           <CardContent>
             {loading ? (
@@ -25,26 +27,26 @@ export const RecentInvoices = ({ recentInvoices, loading, setSelectedInvoice }) 
                 <table className="w-full text-sm text-right">
                   <thead className="border-b bg-slate-50/50">
                     <tr>
-                      <th className="p-3 font-medium text-slate-500">رقم الفاتورة</th>
-                      <th className="p-3 font-medium text-slate-500">التاريخ</th>
-                      <th className="p-3 font-medium text-slate-500">صافي الربح</th>
-                      <th className="p-3 font-medium text-slate-500">عدد الأصناف</th>
-                      <th className="p-3 font-medium text-slate-500">الملاحظات</th>
-                      <th className="p-3 font-medium text-slate-500">الإجراءات</th>
+                      <th className="p-3 font-medium text-slate-500">{t('invoices.invoiceNumber')}</th>
+                      <th className="p-3 font-medium text-slate-500">{t('invoices.date')}</th>
+                      <th className="p-3 font-medium text-slate-500">{t('dashboard.netProfit')}</th>
+                      <th className="p-3 font-medium text-slate-500">{t('invoices.itemsCount')}</th>
+                      <th className="p-3 font-medium text-slate-500">{t('invoices.notes')}</th>
+                      <th className="p-3 font-medium text-slate-500">{t('common.actions')}</th>
                     </tr>
                   </thead>
                   <tbody>
                     {recentInvoices.map((invoice) => (
                       <tr key={invoice.id} className="border-b last:border-0 hover:bg-slate-50/50 transition-colors">
-                        <td className="p-3 font-medium">#{invoice.id}</td>
+                        <td className="p-3 font-medium">#{formatNumber(invoice.id)}</td>
                         <td className="p-3 text-slate-600">
-                          {new Date(invoice.invoiceDate).toLocaleDateString('ar-EG')}
+                          {formatDate(invoice.invoiceDate)} {/* ✅ Fixed */}
                         </td>
                         <td className="p-3 font-bold text-emerald-600">
                           {formatCurrency(invoice.totalProfit)}
                         </td>
                         <td className="p-3 text-slate-600">
-                          {invoice.details ? invoice.details.length : '-'}
+                          {formatNumber(invoice.details ? invoice.details.length : 0)}
                         </td>
                         <td className="p-3 text-slate-500 truncate max-w-[200px]">
                           {invoice.notes || '-'}
@@ -56,7 +58,7 @@ export const RecentInvoices = ({ recentInvoices, loading, setSelectedInvoice }) 
                             onClick={() => setSelectedInvoice(invoice)} 
                           >
                             <Eye className="h-4 w-4 ml-2" />
-                            عرض التفاصيل
+                            {t('invoices.view')}
                           </Button>
                         </td>
                       </tr>
@@ -66,7 +68,7 @@ export const RecentInvoices = ({ recentInvoices, loading, setSelectedInvoice }) 
               </div>
             ) : (
               <div className="text-center p-8 text-gray-500">
-                لا توجد فواتير حديثة
+                {t('dashboard.noRecentInvoices')}
               </div>
             )}
           </CardContent>

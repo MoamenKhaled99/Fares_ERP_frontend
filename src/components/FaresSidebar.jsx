@@ -1,14 +1,13 @@
 import * as React from "react"
+import { useTranslation } from "react-i18next"
 import {
   LayoutDashboard,
-  Anchor,
-  Cable,
   Package,
   ShoppingCart,
   Settings,
   HelpCircle,
-  ArrowUpCircle,
   ArrowRightLeft, 
+  Languages,
 } from "lucide-react"
 
 import { NavMain } from "@/components/nav-main"
@@ -23,61 +22,70 @@ import {
   SidebarMenuButton,
   SidebarMenuItem,
 } from "@/components/ui/sidebar"
+import { Button } from "@/components/ui/button"
 
 export function FaresSidebar({ currentPath, navigate, ...props }) {
+  const { t, i18n } = useTranslation();
+  
+  const toggleLanguage = () => {
+    const newLang = i18n.language === 'ar' ? 'en' : 'ar';
+    i18n.changeLanguage(newLang);
+    document.documentElement.dir = newLang === 'ar' ? 'rtl' : 'ltr';
+  };
+
   const data = {
     user: {
-      name: "المسؤول",
-      email: "admin@fares.com",
+      name: t('user.admin'),
+      email: t('user.email'),
       avatar: "/avatars/admin.jpg",
     },
     navMain: [
       {
-        title: "لوحة التحكم",
+        title: t('nav.dashboard'),
         url: "/",
         icon: LayoutDashboard,
         isActive: currentPath === "/",
       },
       {
-        title: "أصناف",
+        title: t('nav.products'),
         icon: Package,
         isActive: currentPath === "/irons" || currentPath === "/wires" || currentPath === "/silk",
         items: [
           {
-            title: "الحدايد",
+            title: t('nav.irons'),
             url: "/irons",
             isActive: currentPath === "/irons",
           },
           {
-            title: "الويرات",
+            title: t('nav.wires'),
             url: "/wires",
             isActive: currentPath === "/wires",
           },
           {
-            title: "الشرائط",
+            title: t('nav.silk'),
             url: "/silk",
             isActive: currentPath === "/silk",
           },
         ],
       },
       {
-        title: "سجل المخزون",
+        title: t('nav.stockLogs'),
         url: "/stock-logs",
         icon: ArrowRightLeft,
         isActive: currentPath === "/stock-logs",
       },
       {
-        title: "الفواتير",
+        title: t('nav.invoices'),
         url: "/invoices",
         icon: ShoppingCart,
         isActive: currentPath === "/invoices" || currentPath === "/invoices/new",
         items: [
           {
-            title: "قائمة الفواتير",
+            title: t('nav.invoiceList'),
             url: "/invoices",
           },
           {
-            title: "فاتورة جديدة",
+            title: t('nav.newInvoice'),
             url: "/invoices/new",
           },
         ],
@@ -86,12 +94,12 @@ export function FaresSidebar({ currentPath, navigate, ...props }) {
     ],
     navSecondary: [
       {
-        title: "الإعدادات",
+        title: t('nav.settings'),
         url: "#",
         icon: Settings,
       },
       {
-        title: "المساعدة",
+        title: t('nav.help'),
         url: "#",
         icon: HelpCircle,
       },
@@ -105,30 +113,52 @@ export function FaresSidebar({ currentPath, navigate, ...props }) {
   }
 
   return (
-    // FIX: Added side="right" to align with RTL layout
-    <Sidebar collapsible="icon" side="right" {...props}>
-      <SidebarHeader>
+    <Sidebar 
+      collapsible="none" 
+      side={i18n.language === 'ar' ? 'right' : 'left'} 
+      className="min-h-svh bg-sidebar border-r"
+      {...props}
+    >
+      {/* Updated: Added 'mb-6' and 'pt-4' to push content down and add breathing room */}
+      <SidebarHeader className="mb-2 pt-2">
         <SidebarMenu>
           <SidebarMenuItem>
             <SidebarMenuButton 
               size="lg" 
               onClick={() => navigate("/")}
-              className="data-[slot=sidebar-menu-button]:!p-2"
+              // Updated: changed height to h-auto and added padding (py-4) to accommodate larger logo
+              className="data-[slot=sidebar-menu-button]:!p-2 hover:bg-transparent h-auto py-3"
             >
-              <div className="flex aspect-square size-8 items-center justify-center rounded-lg bg-linear-to-br from-blue-500 to-purple-600 text-white font-bold">
-                F
+              <div className="flex aspect-square size-12 items-center justify-center">
+                <img 
+                  src="/logo.png" 
+                  alt="App Logo" 
+                  className="size-full object-contain" 
+                />
               </div>
               <div className="flex flex-col gap-0.5 leading-none">
-                <span className="font-bold text-lg">Fares ERP</span>
-                <span className="text-xs">نظام إدارة متكامل</span>
+                <span className="font-bold text-lg">{t('app.title')}</span>
+                <span className="text-xs">{t('app.subtitle')}</span>
               </div>
             </SidebarMenuButton>
           </SidebarMenuItem>
         </SidebarMenu>
       </SidebarHeader>
+
       <SidebarContent>
         <NavMain items={data.navMain} onNavigate={handleNavigate} />
         <NavSecondary items={data.navSecondary} className="mt-auto" onNavigate={handleNavigate} />
+        <div className="px-3 py-2">
+          <Button
+            variant="outline"
+            size="sm"
+            onClick={toggleLanguage}
+            className="w-full justify-start gap-2"
+          >
+            <Languages className="h-4 w-4" />
+            <span>{i18n.language === 'ar' ? 'English' : 'العربية'}</span>
+          </Button>
+        </div>
       </SidebarContent>
       <SidebarFooter>
         <NavUser user={data.user} />

@@ -1,3 +1,4 @@
+import { useTranslation } from 'react-i18next';
 import { Loader2, AlertCircle, Plus } from "lucide-react";
 import { Card, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -11,6 +12,7 @@ import { useInvoiceList } from "@/hooks/useInvoiceList";
 
 
 export default function InvoicesList({ navigate }) {
+  const { t } = useTranslation();
   // ✅ USE HOOK: All state and fetching logic is here
   const {
     invoices,
@@ -26,18 +28,18 @@ export default function InvoicesList({ navigate }) {
   } = useInvoiceList();
 
   return (
-    <div className="p-6 space-y-6 min-h-screen" dir="rtl">
+    <div className="p-6 space-y-6 min-h-screen">
       {/* Header with Add Button */}
       <div className="flex items-center justify-between">
         <div className="space-y-2">
-          <h2 className="text-3xl font-bold">قائمة الفواتير</h2>
-          <p className="text-muted-foreground">عرض جميع الفواتير المسجلة</p>
+          <h2 className="text-3xl font-bold">{t('invoices.list')}</h2>
+          <p className="text-muted-foreground">{t('invoices.listDescription')}</p>
         </div>
         <Button
           onClick={() => navigate("/invoices/new")}
           className="shadow-lg"
         >
-          <Plus className="ml-2 h-4 w-4" /> فاتورة جديدة
+          <Plus className="ml-2 h-4 w-4" /> {t('invoices.newInvoice')}
         </Button>
       </div>
 

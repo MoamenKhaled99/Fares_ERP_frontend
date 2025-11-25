@@ -1,4 +1,6 @@
+// src/pages/stock/StockLogsPage.jsx
 import React from 'react';
+import { useTranslation } from 'react-i18next';
 import { format } from 'date-fns';
 import { Loader2, AlertCircle, FileText } from 'lucide-react';
 import { Card, CardContent } from '@/components/ui/card';
@@ -9,6 +11,7 @@ import { useStockMovements } from '@/hooks/useStockMovements';
 import { StockMovementsTable } from '@/components/stock/StockMovementsTable';
 
 const StockLogsPage = () => {
+  const { t } = useTranslation();
   const {
     movements,
     loading,
@@ -21,38 +24,38 @@ const StockLogsPage = () => {
   } = useStockMovements();
 
   return (
-    <div className="p-6 space-y-6 min-h-screen" dir="rtl">
+    <div className="p-6 space-y-6 min-h-screen">
       <div className="space-y-2">
-        <h2 className="text-3xl font-bold">سجل حركات المخزون</h2>
-        <p className="text-muted-foreground">عرض جميع حركات الوارد والصادر بالتفصيل</p>
+        <h2 className="text-3xl font-bold">{t('stock.title')}</h2>
+        <p className="text-muted-foreground">{t('stock.movements')}</p>
       </div>
 
       {/* Date Range Filter UI */}
       <div className="flex items-center gap-4 border p-4 rounded-lg bg-white shadow-sm">
         <h3 className="text-md font-medium text-gray-700 shrink-0">
-          تصفية التاريخ:
+          {t('filters.filter')}:
         </h3>
 
         <div className="flex items-center gap-2">
-          <Label>من:</Label>
+          <Label>{t('filters.fromDate')}:</Label>
           <DatePicker
             date={fromDate ? new Date(fromDate) : undefined}
             setDate={(date) => setFromDate(date ? format(date, "yyyy-MM-dd") : "")}
-            placeholder="من تاريخ"
+            placeholder={t('filters.selectDate')}
           />
         </div>
 
         <div className="flex items-center gap-2">
-          <Label>إلى:</Label>
+          <Label>{t('filters.toDate')}:</Label>
           <DatePicker
             date={toDate ? new Date(toDate) : undefined}
             setDate={(date) => setToDate(date ? format(date, "yyyy-MM-dd") : "")}
-            placeholder="إلى تاريخ"
+            placeholder={t('filters.selectDate')}
           />
         </div>
 
         <Button onClick={handleClearFilters} variant="ghost" size="sm">
-          مسح
+          {t('filters.reset')}
         </Button>
       </div>
 
@@ -72,7 +75,7 @@ const StockLogsPage = () => {
           ) : movements.length === 0 ? (
             <div className="text-center py-12">
               <FileText className="h-12 w-12 text-gray-400 mx-auto mb-4" />
-              <p className="text-gray-500">لا توجد حركات مخزون مسجلة</p>
+              <p className="text-gray-500">{t('common.noData')}</p>
             </div>
           ) : (
             <StockMovementsTable movements={movements} />

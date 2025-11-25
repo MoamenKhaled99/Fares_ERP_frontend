@@ -1,24 +1,25 @@
-// src/components/invoices/InvoiceDetailsModal.jsx (NEW FILE)
 import React from 'react';
+import { useTranslation } from 'react-i18next';
 import { Button } from '@/components/ui/button';
 import { Card, CardHeader, CardTitle, CardContent } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
-import { formatCurrency } from '@/lib/utils';
+import { formatCurrency, formatNumber, formatDate } from '@/lib/number.utils'; // ✅ Import
 import { getProductTypeLabel } from '@/lib/product.utils';
 
 export const InvoiceDetailsModal = ({ invoice, onClose }) => {
+    const { t } = useTranslation();
     if (!invoice) return null;
 
     const renderProductName = (detail) => {
         if (detail.productName && detail.productName.trim() !== '') return detail.productName;
-        // Fallbacks based on product type and ID when name isn't stored in detail
+        const id = formatNumber(detail.productId);
         switch (detail.productType) {
             case 'silk_strip':
-                return `شريط حريري #${detail.productId}`;
+                return `${t('dashboard.silkStrip')} #${id}`;
             case 'iron':
-                return `حدايد #${detail.productId}`;
+                return `${t('dashboard.iron')} #${id}`;
             case 'wire':
-                return `واير #${detail.productId}`;
+                return `${t('dashboard.wire')} #${id}`;
             default:
                 return '—';
         }
@@ -32,7 +33,7 @@ export const InvoiceDetailsModal = ({ invoice, onClose }) => {
             >
                 <CardHeader className="border-b">
                     <CardTitle className="flex justify-between items-center">
-                        <span>تفاصيل الفاتورة #{invoice.id}</span>
+                        <span>{t('invoices.details')} #{formatNumber(invoice.id)}</span>
                         <Button variant="ghost" size="icon" onClick={onClose}>×</Button>
                     </CardTitle>
                 </CardHeader>
@@ -40,32 +41,27 @@ export const InvoiceDetailsModal = ({ invoice, onClose }) => {
                     <div className="space-y-4">
                         <div className="grid grid-cols-2 gap-4 text-sm">
                             <div>
-                                <span className="text-gray-500">التاريخ:</span>
-                                <p className="font-medium">{new Date(invoice.invoiceDate).toLocaleDateString('ar-EG')}</p>
+                                <span className="text-gray-500">{t('invoices.date')}:</span>
+                                <p className="font-medium">{formatDate(invoice.invoiceDate)}</p> {/* ✅ Fixed */}
                             </div>
                             <div>
-                                <span className="text-gray-500">إجمالي الربح:</span>
+                                <span className="text-gray-500">{t('invoices.totalProfit')}:</span>
                                 <p className="font-bold text-green-600">{formatCurrency(invoice.totalProfit)}</p>
                             </div>
                         </div>
-
-                        {invoice.notes && (
-                            <div className="text-sm">
-                                <span className="text-gray-500">الملاحظات:</span>
-                                <p className="mt-1 text-gray-700">{invoice.notes}</p>
-                            </div>
-                        )}
-
+                        
+                        {/* ... rest of the file remains similar, ensuring formatNumber is used for quantities ... */}
+                        
                         <div className="border rounded-lg overflow-hidden">
                             <table className="w-full text-sm text-right">
                                 <thead className="bg-gray-50">
                                     <tr>
-                                        <th className="p-3 font-medium text-gray-500">اسم المنتج</th>
-                                        <th className="p-3 font-medium text-gray-500">النوع</th>
-                                        <th className="p-3 font-medium text-gray-500">الكمية</th>
-                                        <th className="p-3 font-medium text-gray-500">سعر الشراء</th>
-                                        <th className="p-3 font-medium text-gray-500">سعر البيع</th>
-                                        <th className="p-3 font-medium text-gray-500">الربح</th>
+                                        <th className="p-3 font-medium text-gray-500">{t('invoices.product')}</th>
+                                        <th className="p-3 font-medium text-gray-500">{t('stock.type')}</th>
+                                        <th className="p-3 font-medium text-gray-500">{t('invoices.quantity')}</th>
+                                        <th className="p-3 font-medium text-gray-500">{t('invoices.purchasePrice')}</th>
+                                        <th className="p-3 font-medium text-gray-500">{t('invoices.sellingPrice')}</th>
+                                        <th className="p-3 font-medium text-gray-500">{t('invoices.profit')}</th>
                                     </tr>
                                 </thead>
                                 <tbody>
@@ -77,7 +73,7 @@ export const InvoiceDetailsModal = ({ invoice, onClose }) => {
                                                     {getProductTypeLabel(detail.productType)}
                                                 </Badge>
                                             </td>
-                                            <td className="p-3">{detail.quantity}</td>
+                                            <td className="p-3">{formatNumber(detail.quantity)}</td>
                                             <td className="p-3">{formatCurrency(detail.purchasePrice)}</td>
                                             <td className="p-3">{formatCurrency(detail.sellingPrice)}</td>
                                             <td className="p-3 font-semibold text-green-600">

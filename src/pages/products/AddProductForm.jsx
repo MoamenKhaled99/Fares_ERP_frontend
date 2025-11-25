@@ -1,10 +1,12 @@
 import React, { useState, useEffect } from 'react';
+import { useTranslation } from 'react-i18next';
 import { Button } from '../../components/ui/button';
 import { Input } from '../../components/ui/input';
 import { Label } from '../../components/ui/label';
 import { productService } from '../../services/productService';
 
 const AddProductForm = ({ onSubmit, onClose, type }) => {
+  const { t } = useTranslation();
   const [form, setForm] = useState({
     description: '',
     totalQuantity: 0,
@@ -61,12 +63,12 @@ const AddProductForm = ({ onSubmit, onClose, type }) => {
     <form onSubmit={handleSubmit} className="space-y-4">
       {!isSilkStrip && (
         <div className="space-y-2">
-          <Label>اسم المنتج / الوصف</Label>
+          <Label>{t('products.productName')}</Label>
           <Input
             required
             value={form.description}
             onChange={e => setForm({ ...form, description: e.target.value })}
-            placeholder="مثال: حدايد تسليح 10مم"
+            placeholder={t('products.productNamePlaceholder')}
           />
         </div>
       )}
@@ -74,20 +76,20 @@ const AddProductForm = ({ onSubmit, onClose, type }) => {
       {isSilkStrip ? (
         <>
           <div className="space-y-2">
-            <Label>حمولة الطن (Load Capacity)</Label>
+            <Label>{t('products.loadCapacity')}</Label>
             <Input
               required
               type="number"
               step="0.01"
               value={form.loadCapacity}
               onChange={e => setForm({ ...form, loadCapacity: e.target.value })}
-              placeholder="مثال: 2"
+              placeholder={t('products.loadCapacityPlaceholder')}
             />
           </div>
           
           <div className="grid grid-cols-2 gap-4">
             <div className="space-y-2">
-              <Label>معامل الأمان (Safety Factor)</Label>
+              <Label>{t('products.safetyFactor')}</Label>
               <select
                 required
                 className="w-full h-10 rounded-md border border-gray-300 px-3 bg-white focus:outline-none focus:ring-2 focus:ring-blue-500"
@@ -97,7 +99,7 @@ const AddProductForm = ({ onSubmit, onClose, type }) => {
                 {safetyFactorRates.length > 0 ? (
                   safetyFactorRates.map(rate => (
                     <option key={rate.id} value={rate.factor}>
-                      {rate.factor} (معدل: {rate.rate})
+                      {t('products.safetyFactorWithRate', { factor: rate.factor, rate: rate.rate })}
                     </option>
                   ))
                 ) : (
@@ -110,20 +112,20 @@ const AddProductForm = ({ onSubmit, onClose, type }) => {
               </select>
             </div>
             <div className="space-y-2">
-              <Label>الوحدة بالمتر (Unit Meter)</Label>
+              <Label>{t('products.unitMeter')}</Label>
               <Input
                 required
                 type="number"
                 step="0.01"
                 value={form.unitMeter}
                 onChange={e => setForm({ ...form, unitMeter: e.target.value })}
-                placeholder="مثال: 5"
+                placeholder={t('products.unitMeterPlaceholder')}
               />
             </div>
           </div>
 
           <div className="space-y-2">
-            <Label>إجمالي الكمية</Label>
+            <Label>{t('products.totalQuantity')}</Label>
             <Input
               required
               type="number"
@@ -133,13 +135,13 @@ const AddProductForm = ({ onSubmit, onClose, type }) => {
           </div>
 
           <div className="p-3 bg-blue-50 rounded-md text-sm text-blue-800">
-            💡 السعر سيتم حسابه تلقائياً: معدل معامل الأمان × الوحدة بالمتر × حمولة الطن
+            {t('products.priceAutoCalcNote')}
           </div>
         </>
       ) : (
         <div className="grid grid-cols-2 gap-4">
           <div className="space-y-2">
-            <Label>سعر الوحدة</Label>
+            <Label>{t('products.unitPrice')}</Label>
             <Input
               required
               type="number"
@@ -149,7 +151,7 @@ const AddProductForm = ({ onSubmit, onClose, type }) => {
             />
           </div>
           <div className="space-y-2">
-            <Label>إجمالي الكمية</Label>
+            <Label>{t('products.totalQuantity')}</Label>
             <Input
               required
               type="number"
@@ -161,9 +163,9 @@ const AddProductForm = ({ onSubmit, onClose, type }) => {
       )}
 
       <div className="flex justify-end gap-2 pt-4">
-        <Button type="button" variant="outline" onClick={onClose}>إلغاء</Button>
+        <Button type="button" variant="outline" onClick={onClose}>{t('common.cancel')}</Button>
         <Button type="submit" disabled={loading}>
-          {loading ? 'جاري الحفظ...' : 'حفظ المنتج'}
+          {loading ? t('products.savingProduct') : t('products.saveProduct')}
         </Button>
       </div>
     </form>

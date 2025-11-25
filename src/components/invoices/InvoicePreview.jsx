@@ -1,6 +1,8 @@
+// src/components/invoices/InvoicePreview.jsx
 import React from 'react';
+import { useTranslation } from 'react-i18next';
 import { Trash2, CheckCircle2 } from 'lucide-react';
-import { formatCurrency } from '@/lib/utils';
+import { formatCurrency, formatNumber } from '@/lib/number.utils';
 import { Button } from '@/components/ui/button';
 import { Label } from '@/components/ui/label';
 import { Card, CardHeader, CardTitle, CardContent } from '@/components/ui/card';
@@ -13,6 +15,7 @@ export const InvoicePreview = ({
   onSave,
   saving
 }) => {
+  const { t } = useTranslation();
   const totalAmount = lineItems.reduce((sum, item) => 
     sum + (item.quantity * item.sellPrice), 0
   );
@@ -21,7 +24,7 @@ export const InvoicePreview = ({
     <Card className="lg:col-span-2 flex flex-col">
       <CardHeader>
         <CardTitle className="flex justify-between">
-          <span>معاينة الفاتورة</span>
+          <span>{t('invoices.invoicePreview')}</span>
           <span className="text-blue-600">{formatCurrency(totalAmount)}</span>
         </CardTitle>
       </CardHeader>
@@ -30,10 +33,10 @@ export const InvoicePreview = ({
           <table className="w-full text-right text-sm">
             <thead className="bg-gray-50">
               <tr>
-                <th className="p-3 font-medium text-gray-500">المنتج</th>
-                <th className="p-3 font-medium text-gray-500">الكمية</th>
-                <th className="p-3 font-medium text-gray-500">السعر</th>
-                <th className="p-3 font-medium text-gray-500">المجموع</th>
+                <th className="p-3 font-medium text-gray-500">{t('invoices.product')}</th>
+                <th className="p-3 font-medium text-gray-500">{t('invoices.quantity')}</th>
+                <th className="p-3 font-medium text-gray-500">{t('invoices.price')}</th>
+                <th className="p-3 font-medium text-gray-500">{t('invoices.subtotal')}</th>
                 <th className="p-3"></th>
               </tr>
             </thead>
@@ -41,7 +44,7 @@ export const InvoicePreview = ({
               {lineItems.map((item) => (
                 <tr key={item.id} className="border-t">
                   <td className="p-3">{item.productName}</td>
-                  <td className="p-3">{item.quantity}</td>
+                  <td className="p-3">{formatNumber(item.quantity)}</td>
                   <td className="p-3">{formatCurrency(item.sellPrice)}</td>
                   <td className="p-3 font-bold">
                     {formatCurrency(item.quantity * item.sellPrice)}
@@ -61,7 +64,7 @@ export const InvoicePreview = ({
               {!lineItems.length && (
                 <tr>
                   <td colSpan="5" className="p-8 text-center text-gray-400">
-                    الفاتورة فارغة
+                    {t('invoices.emptyInvoice')}
                   </td>
                 </tr>
               )}
@@ -71,10 +74,10 @@ export const InvoicePreview = ({
         
         <div className="space-y-4 mt-auto">
           <div className="space-y-2">
-            <Label>ملاحظات</Label>
+            <Label>{t('invoices.notes')}</Label>
             <textarea 
               className="w-full min-h-[80px] rounded-md border border-gray-300 p-3 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
-              placeholder="أدخل ملاحظات إضافية هنا..."
+              placeholder={t('invoices.notesPlaceholder')}
               value={notes}
               onChange={e => setNotes(e.target.value)}
             />
@@ -85,9 +88,9 @@ export const InvoicePreview = ({
             disabled={!lineItems.length || saving} 
             onClick={onSave}
           >
-            {saving ? 'جاري الحفظ...' : (
+            {saving ? t('invoices.saving') : (
               <>
-                <CheckCircle2 className="mr-2 h-5 w-5" /> حفظ الفاتورة
+                <CheckCircle2 className="mr-2 h-5 w-5" /> {t('invoices.saveInvoice')}
               </>
             )}
           </Button>
